@@ -5,32 +5,29 @@ using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Microsoft.EntityFrameworkCore;
-using Microting.eFormMachineAreaBase.Infrastructure.Data;
-using Microting.eFormMachineAreaBase.Infrastructure.Data.Factories;
+using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.WindowsService.BasePn;
 using Rebus.Bus;
-using ServiceItemsPlanningPlugin.Installers;
-using ServiceItemsPlanningPlugin.Messages;
 
 namespace ServiceItemsPlanningPlugin
 {
+    using Installers;
+    using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+
     [Export(typeof(ISdkEventHandler))]
     public class Core : ISdkEventHandler
     {
-        #region var
-        private Tools t = new Tools();
         private eFormCore.Core _sdkCore;
         private IWindsorContainer _container;
-        public IBus _bus;
+        public IBus Bus;
         private bool _coreThreadRunning = false;
-        private bool _coreStatChanging = false;
-        private bool _coreAvailable = false;
+        private bool _coreStatChanging;
+        private bool _coreAvailable;
         private string _serviceLocation;
-        private readonly int _maxParallelism = 1;
-        private readonly int _numberOfWorkers = 1;
-        private MachineAreaPnDbContext _dbContext;
-        #endregion
-        
+        private const int MaxParallelism = 1;
+        private const int NumberOfWorkers = 1;
+        private ItemsPlanningPnDbContext _dbContext;
+
         public void CoreEventException(object sender, EventArgs args)
         {
             // Do nothing
@@ -58,11 +55,7 @@ namespace ServiceItemsPlanningPlugin
 
         public void CaseCompleted(object sender, EventArgs args)
         {
-            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
-
-            string microtingUId = trigger.MicrotingUId;
-            string checkUId = trigger.CheckUId;
-            _bus.SendLocal(new eFormCompleted(microtingUId, checkUId));
+            // Do nothing
         }
 
         public void CaseDeleted(object sender, EventArgs args)
@@ -93,8 +86,8 @@ namespace ServiceItemsPlanningPlugin
                 }
                 
                 
-                string pluginDbName = $"Initial Catalog={dbPrefix}_eform-angular-machinearea-plugin;";
-                string connectionString = sdkConnectionString.Replace(dbNameSection, pluginDbName);
+                var pluginDbName = $"Initial Catalog={dbPrefix}_eform-angular-itemsplanning-plugin;";
+                var connectionString = sdkConnectionString.Replace(dbNameSection, pluginDbName);
 
 
                 if (!_coreAvailable && !_coreStatChanging)
@@ -108,7 +101,7 @@ namespace ServiceItemsPlanningPlugin
                     if (string.IsNullOrEmpty(connectionString))
                         throw new ArgumentException("serverConnectionString is not allowed to be null or empty");
 
-                    MachineAreaPnContextFactory contextFactory = new MachineAreaPnContextFactory();
+                    ItemsPlanningPnContextFactory contextFactory = new ItemsPlanningPnContextFactory();
 
                     _dbContext = contextFactory.CreateDbContext(new[] { connectionString });
                     _dbContext.Database.Migrate();
@@ -119,15 +112,15 @@ namespace ServiceItemsPlanningPlugin
                     startSdkCoreSqlOnly(sdkConnectionString);
 
                     _container = new WindsorContainer();
-                    _container.Register(Component.For<MachineAreaPnDbContext>().Instance(_dbContext));
+                    _container.Register(Component.For<ItemsPlanningPnDbContext>().Instance(_dbContext));
                     _container.Register(Component.For<eFormCore.Core>().Instance(_sdkCore));
                     _container.Install(
                         new RebusHandlerInstaller()
-                        , new RebusInstaller(connectionString, _maxParallelism, _numberOfWorkers)
+                        , new RebusInstaller(connectionString, MaxParallelism, NumberOfWorkers)
                     );
 
 
-                    _bus = _container.Resolve<IBus>();
+                    Bus = _container.Resolve<IBus>();
                 }
                 Console.WriteLine("ServiceItemsPlanningPlugin started");
                 return true;
@@ -136,7 +129,7 @@ namespace ServiceItemsPlanningPlugin
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("Start failed " + ex.Message);
-                throw ex;
+                throw;
             }
         }
 
@@ -154,7 +147,7 @@ namespace ServiceItemsPlanningPlugin
                     while (_coreThreadRunning)
                     {
                         Thread.Sleep(100);
-                        _bus.Dispose();
+                        Bus.Dispose();
                         tries++;
                     }
                     _sdkCore.Close();
@@ -167,10 +160,7 @@ namespace ServiceItemsPlanningPlugin
                 //"Even if you handle it, it will be automatically re-thrown by the CLR at the end of the try/catch/finally."
                 Thread.ResetAbort(); //This ends the re-throwning
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
             return true;
         }
 
