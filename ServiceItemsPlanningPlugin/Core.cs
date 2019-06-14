@@ -109,7 +109,7 @@ namespace ServiceItemsPlanningPlugin
                     _coreAvailable = true;
                     _coreStatChanging = false;
 
-                    startSdkCoreSqlOnly(sdkConnectionString);
+                    StartSdkCoreSqlOnly(sdkConnectionString);
 
                     _container = new WindsorContainer();
                     _container.Register(Component.For<ItemsPlanningPnDbContext>().Instance(_dbContext));
@@ -143,7 +143,7 @@ namespace ServiceItemsPlanningPlugin
 
                     _coreAvailable = false;
 
-                    int tries = 0;
+                    var tries = 0;
                     while (_coreThreadRunning)
                     {
                         Thread.Sleep(100);
@@ -169,7 +169,7 @@ namespace ServiceItemsPlanningPlugin
             return true;
         }
         
-        public void startSdkCoreSqlOnly(string sdkConnectionString)
+        public void StartSdkCoreSqlOnly(string sdkConnectionString)
         {
             _sdkCore = new eFormCore.Core();
 
