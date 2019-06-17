@@ -1,39 +1,27 @@
-﻿namespace ServiceItemsPlanningPlugin.Scheduler
+﻿namespace ServiceItemsPlanningPlugin.Scheduler.Factories
 {
-    using System;
-    using System.Collections.Concurrent;
-    using Microsoft.Extensions.DependencyInjection;
+    using Castle.Windsor;
     using Quartz;
     using Quartz.Spi;
 
     public class QuartzJobFactory : IJobFactory
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        private readonly ConcurrentDictionary<IJob, IServiceScope> _scopes =
-            new ConcurrentDictionary<IJob, IServiceScope>();
+        private readonly IWindsorContainer _container;
 
-        public QuartzJobFactory(IServiceScopeFactory serviceScopeFactory)
+        public QuartzJobFactory(IWindsorContainer container)
         {
-            _serviceScopeFactory = serviceScopeFactory;
+            _container = container;
         }
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            var scope = _serviceScopeFactory.CreateScope();
-            var job = scope.ServiceProvider.GetService(bundle.JobDetail.JobType) as IJob;
-            _scopes.TryAdd(job, scope);
-            return job;
+            return _container.Resolve(bundle.JobDetail.JobType) as IJob;
         }
 
         public void ReturnJob(IJob job)
         {
-            if (_scopes.TryRemove(job, out var scope))
-            {
-                scope.Dispose();
-            }
-
-            (job as IDisposable)?.Dispose();
+            // we let the DI container handler this
         }
     }
 }
