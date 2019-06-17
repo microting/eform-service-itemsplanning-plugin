@@ -4,11 +4,11 @@
 
     public class ScheduledItemExecuted
     {
-        public ItemList itemList { get; protected set; }
+        public int itemListId { get; protected set; }
 
-        public ScheduledItemExecuted(ItemList itemList)
+        public ScheduledItemExecuted(int itemListId)
         {
-            this.itemList = itemList;
+            this.itemListId = itemListId;
         }
     }
 }

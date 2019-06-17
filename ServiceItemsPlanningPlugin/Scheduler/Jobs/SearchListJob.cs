@@ -42,7 +42,7 @@
 
                         x.RepeatType == RepeatType.Month 
                            && (x.DayOfMonth <= now.Day || now.Day == lastDayOfMonth)
-                           && now.AddMonths(-x.RepeatEvery).Month >= x.LastExecutedTime.Value.Month
+                           && (now.AddMonths(-x.RepeatEvery).Month >= x.LastExecutedTime.Value.Month || now.AddMonths(-x.RepeatEvery).Year > x.LastExecutedTime.Value.Year)
                      )
                 ).ToListAsync();
 
@@ -53,7 +53,7 @@
                 list.LastExecutedTime = now;
                 await list.Update(_dbContext);
 
-                await _bus.SendLocal(new ScheduledItemExecuted(list));
+                await _bus.SendLocal(new ScheduledItemExecuted(list.Id));
 
                 Console.WriteLine($"List {list.Name} executed");
             }

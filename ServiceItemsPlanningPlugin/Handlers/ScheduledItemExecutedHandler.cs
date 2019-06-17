@@ -22,8 +22,8 @@
         public async Task Handle(ScheduledItemExecuted message)
         {
             var siteIds = _dbContext.PluginConfigurationValues.FirstOrDefault(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
-            var list = message.itemList;
-
+            var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
+            
             var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
 
             if (siteIds != null)
