@@ -13,11 +13,7 @@ namespace ServiceItemsPlanningPlugin
 {
     using Installers;
     using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
-    using Quartz;
-    using Quartz.Impl;
-    using Quartz.Spi;
     using Scheduler;
-    using Scheduler.Factories;
     using Scheduler.Jobs;
 
     [Export(typeof(ISdkEventHandler))]
@@ -33,7 +29,6 @@ namespace ServiceItemsPlanningPlugin
         private const int MaxParallelism = 1;
         private const int NumberOfWorkers = 1;
         private ItemsPlanningPnDbContext _dbContext;
-        private QuartzService _quartzService;
 
         public void CoreEventException(object sender, EventArgs args)
         {
@@ -126,6 +121,8 @@ namespace ServiceItemsPlanningPlugin
                         new RebusHandlerInstaller()
                         , new RebusInstaller(connectionString, MaxParallelism, NumberOfWorkers)
                     );
+                    _container.Register(Component.For<SearchListJob>());
+                    _container.Register(Component.For<SchedulerService>());
 
                     Bus = _container.Resolve<IBus>();
 
@@ -170,8 +167,6 @@ namespace ServiceItemsPlanningPlugin
                 Thread.ResetAbort(); //This ends the re-throwning
             }
 
-            _quartzService?.Stop();
-
             return true;
         }
 
@@ -187,17 +182,12 @@ namespace ServiceItemsPlanningPlugin
             _sdkCore.StartSqlOnly(sdkConnectionString);
         }
 
-        private async void ConfigureScheduler() 
+        private void ConfigureScheduler()
         {
-            _container.Register(Component.For<IJobFactory>().ImplementedBy<QuartzJobFactory>());
-            _container.Register(Component.For<ISchedulerFactory>().ImplementedBy<StdSchedulerFactory>());
-            _container.Register(Component.For<QuartzService>());
-            _container.Register(Component.For<SearchListJob>());
+            var job = _container.Resolve<SearchListJob>();
+            var scheduler = _container.Resolve<SchedulerService>();
 
-            _quartzService = _container.Resolve<QuartzService>();
-
-            var jobSchedule = new JobSchedule(typeof(SearchListJob), "0 0 3 1/1 * ? *");
-            await _quartzService.StartAsync(new[] {jobSchedule});
+            scheduler.ScheduleTask(3, 0, 1, job);
         }
     }
 }
