@@ -7,10 +7,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microting.ItemsPlanningBase.Infrastructure.Data;
     using Microting.ItemsPlanningBase.Infrastructure.Enums;
-    using Quartz;
     using Rebus.Bus;
 
-    [DisallowConcurrentExecution]
     public class SearchListJob : IJob
     {
         private readonly ItemsPlanningPnDbContext _dbContext;
@@ -22,7 +20,7 @@
             _bus = bus;
         }
 
-        public async Task Execute(IJobExecutionContext context)
+        public async Task Execute()
         {
             var now = DateTime.UtcNow;
             var lastDayOfMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1).AddDays(-1).Day;
