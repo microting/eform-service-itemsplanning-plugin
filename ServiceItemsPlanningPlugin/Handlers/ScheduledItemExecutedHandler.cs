@@ -3,6 +3,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Messages;
+    using Microsoft.EntityFrameworkCore;
     using Microting.ItemsPlanningBase.Infrastructure.Data;
     using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
     using Rebus.Handlers;
@@ -33,8 +34,12 @@
                     foreach (var siteIdString in siteIds.Value.Split(','))
                     {
                         var siteId = int.Parse(siteIdString);
-
-                        _sdkCore.CaseDelete(mainElement.Id, siteId);
+                        var caseToDelete = await _dbContext.ItemCases.LastOrDefaultAsync(x => x.ItemId == item.Id);
+                        
+                        if (caseToDelete != null)
+                        {
+                            _sdkCore.CaseDelete(caseToDelete.MicrotingSdkCaseId.ToString());
+                        }
 
                         var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
