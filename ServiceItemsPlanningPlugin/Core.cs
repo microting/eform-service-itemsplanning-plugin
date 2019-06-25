@@ -186,7 +186,7 @@ namespace ServiceItemsPlanningPlugin
             var job = _container.Resolve<SearchListJob>();
             var scheduler = _container.Resolve<SchedulerService>();
 
-            scheduler.ScheduleTask(3, 0, 15, job);
+            scheduler.ScheduleTask(15, job);
         }
     }
 }
