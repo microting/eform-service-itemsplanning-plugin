@@ -8,14 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.WindowsService.BasePn;
 using Rebus.Bus;
+using ServiceItemsPlanningPlugin.Installers;
+using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+using ServiceItemsPlanningPlugin.Scheduler;
+using ServiceItemsPlanningPlugin.Scheduler.Jobs;
 
 namespace ServiceItemsPlanningPlugin
 {
-    using Installers;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
-    using Scheduler;
-    using Scheduler.Jobs;
-
     [Export(typeof(ISdkEventHandler))]
     public class Core : ISdkEventHandler
     {
@@ -187,7 +186,7 @@ namespace ServiceItemsPlanningPlugin
             var job = _container.Resolve<SearchListJob>();
             var scheduler = _container.Resolve<SchedulerService>();
 
-            scheduler.ScheduleTask(3, 0, 1, job);
+            scheduler.ScheduleTask(3, 0, 15, job);
         }
     }
 }
