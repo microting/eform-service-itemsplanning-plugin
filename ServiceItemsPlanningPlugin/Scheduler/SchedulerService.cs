@@ -8,7 +8,7 @@
     public class SchedulerService
     {
         private readonly List<Timer> _timers = new List<Timer>();
-        public void ScheduleTask(int hour, int min, double dayInterval, IJob job)
+        public void ScheduleTask(int hour, int min, double interval, IJob job)
         {
             var now = DateTime.UtcNow;
 
@@ -30,7 +30,7 @@
             {
                 Console.WriteLine("SchedulerService.Time got called");
                 job.Execute();
-            }, null, timeToGo, TimeSpan.FromDays(dayInterval));
+            }, null, timeToGo, TimeSpan.FromMinutes(interval));
             _timers.Add(timer);
         }
     }
