@@ -13,6 +13,8 @@
             var now = DateTime.UtcNow;
 
             var firstRun = new DateTime(now.Year, now.Month, now.Day, hour, min, 0);
+            Console.WriteLine($"now is {now.ToString()}");
+            Console.WriteLine($"firstRun is {firstRun.ToString()}");
             if (now > firstRun)
             {
                 firstRun = firstRun.AddDays(1);
@@ -26,6 +28,7 @@
 
             var timer = new Timer(x =>
             {
+                Console.WriteLine("SchedulerService.Time got called");
                 job.Execute();
             }, null, timeToGo, TimeSpan.FromDays(dayInterval));
             _timers.Add(timer);

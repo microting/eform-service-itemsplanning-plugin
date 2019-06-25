@@ -22,6 +22,7 @@
 
         public async Task Execute()
         {
+            Console.WriteLine("SearchListJob.Execute got called");
             var now = DateTime.UtcNow;
             var lastDayOfMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1).AddDays(-1).Day;
             var scheduledItemLists = await _dbContext.ItemLists
