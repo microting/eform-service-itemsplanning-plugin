@@ -10,7 +10,6 @@ using Microting.WindowsService.BasePn;
 using Rebus.Bus;
 using ServiceItemsPlanningPlugin.Installers;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
-using ServiceItemsPlanningPlugin.Scheduler;
 using ServiceItemsPlanningPlugin.Scheduler.Jobs;
 
 namespace ServiceItemsPlanningPlugin
@@ -28,6 +27,7 @@ namespace ServiceItemsPlanningPlugin
         private const int MaxParallelism = 1;
         private const int NumberOfWorkers = 1;
         private ItemsPlanningPnDbContext _dbContext;
+        private Timer _scheduleTimer;
 
         public void CoreEventException(object sender, EventArgs args)
         {
@@ -121,10 +121,9 @@ namespace ServiceItemsPlanningPlugin
                         , new RebusInstaller(connectionString, MaxParallelism, NumberOfWorkers)
                     );
                     _container.Register(Component.For<SearchListJob>());
-                    _container.Register(Component.For<SchedulerService>());
 
                     Bus = _container.Resolve<IBus>();
-
+                    
                     ConfigureScheduler();
                 }
                 Console.WriteLine("ServiceItemsPlanningPlugin started");
@@ -159,6 +158,8 @@ namespace ServiceItemsPlanningPlugin
 
                     _coreStatChanging = false;
                 }
+
+                _scheduleTimer.Dispose();
             }
             catch (ThreadAbortException)
             {
@@ -184,9 +185,11 @@ namespace ServiceItemsPlanningPlugin
         private void ConfigureScheduler()
         {
             var job = _container.Resolve<SearchListJob>();
-            var scheduler = _container.Resolve<SchedulerService>();
-
-            scheduler.ScheduleTask(15, job);
+            
+            _scheduleTimer = new Timer(async x =>
+            {
+                await job.Execute();
+            }, null, TimeSpan.Zero, TimeSpan.FromMinutes(15));
         }
     }
 }
