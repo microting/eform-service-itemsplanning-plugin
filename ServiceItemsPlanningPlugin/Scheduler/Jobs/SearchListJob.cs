@@ -44,6 +44,8 @@
                            && (now.AddMonths(-x.RepeatEvery).Month >= x.LastExecutedTime.Value.Month || now.AddMonths(-x.RepeatEvery).Year > x.LastExecutedTime.Value.Year)
                      )
                 ).ToListAsync();
+            
+            Console.WriteLine($"We found the following number of entries: {scheduledItemLists.Count}");
 
             Console.WriteLine("SearchListJob executed");
 
