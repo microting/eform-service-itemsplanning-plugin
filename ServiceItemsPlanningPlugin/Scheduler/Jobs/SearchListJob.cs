@@ -1,14 +1,15 @@
-﻿namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
-{
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Messages;
-    using Microsoft.EntityFrameworkCore;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Enums;
-    using Rebus.Bus;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using ServiceItemsPlanningPlugin.Extensions;
+using ServiceItemsPlanningPlugin.Messages;
+using Microsoft.EntityFrameworkCore;
+using Microting.ItemsPlanningBase.Infrastructure.Data;
+using Microting.ItemsPlanningBase.Infrastructure.Enums;
+using Rebus.Bus;
 
+namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
+{
     public class SearchListJob : IJob
     {
         private readonly ItemsPlanningPnDbContext _dbContext;
@@ -25,7 +26,7 @@
             Console.WriteLine("SearchListJob.Execute got called");
             var now = DateTime.UtcNow;
             var lastDayOfMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1).AddDays(-1).Day;
-            var scheduledItemLists = await _dbContext.ItemLists
+            var scheduledItemListsQuery = _dbContext.ItemLists
                 .Where(x =>
                     (x.RepeatUntil == null || DateTime.UtcNow <= x.RepeatUntil) 
                     && 
@@ -43,11 +44,12 @@
                            && (x.DayOfMonth <= now.Day || now.Day == lastDayOfMonth)
                            && (now.AddMonths(-x.RepeatEvery).Month >= x.LastExecutedTime.Value.Month || now.AddMonths(-x.RepeatEvery).Year > x.LastExecutedTime.Value.Year)
                      )
-                ).ToListAsync();
-            
-            Console.WriteLine($"We found the following number of entries: {scheduledItemLists.Count}");
 
-            Console.WriteLine("SearchListJob executed");
+                );
+            var scheduledItemLists = await scheduledItemListsQuery.ToListAsync();
+            
+            Console.WriteLine(scheduledItemListsQuery.ToSql());
+            Console.WriteLine($"SearchListJob executed. Found {scheduledItemLists.Count} lists");
 
             foreach (var list in scheduledItemLists)
             {

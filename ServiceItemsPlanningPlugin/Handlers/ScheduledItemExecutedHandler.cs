@@ -1,13 +1,15 @@
-﻿namespace ServiceItemsPlanningPlugin.Handlers
-{
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Messages;
-    using Microsoft.EntityFrameworkCore;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
-    using Rebus.Handlers;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using ServiceItemsPlanningPlugin.Messages;
+using Microsoft.EntityFrameworkCore;
+using Microting.ItemsPlanningBase.Infrastructure.Data;
+using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
+using OpenStack.NetCoreSwiftClient.Extensions;
+using Rebus.Handlers;
 
+namespace ServiceItemsPlanningPlugin.Handlers
+{
     public class ScheduledItemExecutedHandler : IHandleMessages<ScheduledItemExecuted>
     {
         private readonly ItemsPlanningPnDbContext _dbContext;
@@ -24,37 +26,41 @@
         {
             var siteIds = _dbContext.PluginConfigurationValues.FirstOrDefault(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
             var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
-            
             var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
 
-            if (siteIds != null)
+            if (siteIds == null || siteIds.Value.IsNullOrEmpty())
             {
-                foreach (var item in list.Items)
+                Console.WriteLine("SiteIds not set");
+                return;
+            }
+
+            Console.WriteLine($"SiteIds {siteIds}");
+
+            foreach (var item in list.Items)
+            {
+                foreach (var siteIdString in siteIds.Value.Split(','))
                 {
-                    foreach (var siteIdString in siteIds.Value.Split(','))
+                    var siteId = int.Parse(siteIdString);
+                    var caseToDelete = await _dbContext.ItemCases.LastOrDefaultAsync(x => x.ItemId == item.Id);
+                    
+                    if (caseToDelete != null)
                     {
-                        var siteId = int.Parse(siteIdString);
-                        var caseToDelete = await _dbContext.ItemCases.LastOrDefaultAsync(x => x.ItemId == item.Id);
-                        
-                        if (caseToDelete != null)
-                        {
-                            _sdkCore.CaseDelete(caseToDelete.MicrotingSdkCaseId.ToString());
-                        }
+                        _sdkCore.CaseDelete(caseToDelete.MicrotingSdkCaseId.ToString());
+                    }
 
-                        var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
+                    var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
-                        var itemCase = new ItemCase()
-                        {
-                            MicrotingSdkSiteId = siteId,
-                            MicrotingSdkeFormId = list.RelatedEFormId,
-                            Status = 1,
-                            MicrotingSdkCaseId = int.Parse(caseId),
-                            ItemId = item.Id
-                        };
+                    var itemCase = new ItemCase()
+                    {
+                        MicrotingSdkSiteId = siteId,
+                        MicrotingSdkeFormId = list.RelatedEFormId,
+                        Status = 1,
+                        MicrotingSdkCaseId = int.Parse(caseId),
+                        ItemId = item.Id
+                    };
 
-                        await itemCase.Save(_dbContext);
-                    } 
-                }
+                    await itemCase.Save(_dbContext);
+                } 
             }
         }
     }
