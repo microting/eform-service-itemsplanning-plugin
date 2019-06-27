@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eFormShared;
 using ServiceItemsPlanningPlugin.Messages;
 using Microsoft.EntityFrameworkCore;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
@@ -27,6 +29,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
             var siteIds = _dbContext.PluginConfigurationValues.FirstOrDefault(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
             var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
             var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
+            string folderId = getFolderId(list.Name).ToString();
 
             if (siteIds == null || siteIds.Value.IsNullOrEmpty())
             {
@@ -46,8 +49,14 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     if (caseToDelete != null)
                     {
                         _sdkCore.CaseDelete(caseToDelete.MicrotingSdkCaseId.ToString());
+                        caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
+                        await caseToDelete.Update(_dbContext);
                     }
 
+                    mainElement.Label = item.Name;
+                    mainElement.ElementList[0].Label = mainElement.Label;
+                    mainElement.CheckListFolderName = folderId;
+                    
                     var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
                     var itemCase = new ItemCase()
@@ -62,6 +71,38 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     await itemCase.Save(_dbContext);
                 } 
             }
+        }
+
+        private int getFolderId(string name)
+        {
+            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true);
+
+            bool folderAlreadyExist = false;
+            int microtingUId = 0;
+            foreach (Folder_Dto folderDto in folderDtos)
+            {
+                if (folderDto.Name == name)
+                {
+                    folderAlreadyExist = true;
+                    microtingUId = (int)folderDto.MicrotingUId;
+                }
+            }
+
+            if (!folderAlreadyExist)
+            {
+                _sdkCore.FolderCreate(name, "", null);
+                folderDtos = _sdkCore.FolderGetAll(true);
+                
+                foreach (Folder_Dto folderDto in folderDtos)
+                {
+                    if (folderDto.Name == name)
+                    {
+                        microtingUId = (int)folderDto.MicrotingUId;
+                    }
+                }
+            }
+
+            return microtingUId;
         }
     }
 }
