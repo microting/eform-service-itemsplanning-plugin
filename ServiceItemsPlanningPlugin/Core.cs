@@ -30,6 +30,7 @@ using Microting.WindowsService.BasePn;
 using Rebus.Bus;
 using ServiceItemsPlanningPlugin.Installers;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+using ServiceItemsPlanningPlugin.Messages;
 using ServiceItemsPlanningPlugin.Scheduler.Jobs;
 
 namespace ServiceItemsPlanningPlugin
@@ -39,7 +40,7 @@ namespace ServiceItemsPlanningPlugin
     {
         private eFormCore.Core _sdkCore;
         private IWindsorContainer _container;
-        public IBus Bus;
+        private IBus _bus;
         private bool _coreThreadRunning = false;
         private bool _coreStatChanging;
         private bool _coreAvailable;
@@ -71,12 +72,18 @@ namespace ServiceItemsPlanningPlugin
 
         public void eFormRetrived(object sender, EventArgs args)
         {
-            // Do nothing
+            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
+
+            string caseId = trigger.MicrotingUId;
+            _bus.SendLocal(new eFormRetrieved(caseId));
         }
 
         public void CaseCompleted(object sender, EventArgs args)
         {
-            // Do nothing
+            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
+
+            string caseId = trigger.MicrotingUId;
+            _bus.SendLocal(new eFormCompleted(caseId));
         }
 
         public void CaseDeleted(object sender, EventArgs args)
@@ -142,7 +149,7 @@ namespace ServiceItemsPlanningPlugin
                     );
                     _container.Register(Component.For<SearchListJob>());
 
-                    Bus = _container.Resolve<IBus>();
+                    _bus = _container.Resolve<IBus>();
                     
                     ConfigureScheduler();
                 }
@@ -171,7 +178,7 @@ namespace ServiceItemsPlanningPlugin
                     while (_coreThreadRunning)
                     {
                         Thread.Sleep(100);
-                        Bus.Dispose();
+                        _bus.Dispose();
                         tries++;
                     }
                     _sdkCore.Close();

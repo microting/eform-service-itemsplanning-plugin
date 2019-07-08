@@ -83,7 +83,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     {
                         MicrotingSdkSiteId = siteId,
                         MicrotingSdkeFormId = list.RelatedEFormId,
-                        Status = 1,
+                        Status = 66,
                         MicrotingSdkCaseId = int.Parse(caseId),
                         ItemId = item.Id
                     };
