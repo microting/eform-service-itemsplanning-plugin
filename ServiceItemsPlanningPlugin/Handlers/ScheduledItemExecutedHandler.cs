@@ -76,7 +76,9 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     mainElement.Label = item.Name;
                     mainElement.ElementList[0].Label = mainElement.Label;
                     mainElement.CheckListFolderName = folderId;
-                    
+                    mainElement.StartDate = DateTime.Now.ToUniversalTime();
+                    mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
+
                     var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
                     var itemCase = new ItemCase()
