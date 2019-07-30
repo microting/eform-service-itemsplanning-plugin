@@ -81,16 +81,20 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
-                    var itemCase = new ItemCase()
+                    Case_Dto caseDto = _sdkCore.CaseLookupMUId(caseId);
+                    if (caseDto.CaseId != null)
                     {
-                        MicrotingSdkSiteId = siteId,
-                        MicrotingSdkeFormId = list.RelatedEFormId,
-                        Status = 66,
-                        MicrotingSdkCaseId = int.Parse(caseId),
-                        ItemId = item.Id
-                    };
+                        var itemCase = new ItemCase()
+                        {
+                            MicrotingSdkSiteId = siteId,
+                            MicrotingSdkeFormId = list.RelatedEFormId,
+                            Status = 66,
+                            MicrotingSdkCaseId = (int)caseDto.CaseId,
+                            ItemId = item.Id
+                        };
 
-                    await itemCase.Save(_dbContext);
+                        await itemCase.Save(_dbContext);
+                    }
                 } 
             }
         }
