@@ -21,10 +21,10 @@ SOFTWARE.
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using eFormShared;
 using ServiceItemsPlanningPlugin.Extensions;
 using ServiceItemsPlanningPlugin.Messages;
 using Microsoft.EntityFrameworkCore;
+using Microting.eForm.Infrastructure.Constants;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.ItemsPlanningBase.Infrastructure.Enums;
 using Rebus.Bus;

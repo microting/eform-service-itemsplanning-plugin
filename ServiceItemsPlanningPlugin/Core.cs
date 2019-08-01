@@ -25,6 +25,7 @@ using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Microsoft.EntityFrameworkCore;
+using Microting.eForm.Dto;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.WindowsService.BasePn;
 using Rebus.Bus;
@@ -72,7 +73,7 @@ namespace ServiceItemsPlanningPlugin
 
         public void eFormRetrived(object sender, EventArgs args)
         {
-            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
+            Case_Dto trigger = (Case_Dto)sender;
 
             string caseId = trigger.MicrotingUId;
             _bus.SendLocal(new eFormRetrieved(caseId));
@@ -80,7 +81,7 @@ namespace ServiceItemsPlanningPlugin
 
         public void CaseCompleted(object sender, EventArgs args)
         {
-            eFormShared.Case_Dto trigger = (eFormShared.Case_Dto)sender;
+            Case_Dto trigger = (Case_Dto)sender;
 
             string caseId = trigger.MicrotingUId;
             _bus.SendLocal(new eFormCompleted(caseId));

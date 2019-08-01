@@ -22,9 +22,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using eFormShared;
 using ServiceItemsPlanningPlugin.Messages;
 using Microsoft.EntityFrameworkCore;
+using Microting.eForm.Dto;
+using Microting.eForm.Infrastructure.Constants;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
 using OpenStack.NetCoreSwiftClient.Extensions;
@@ -93,7 +94,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                             ItemId = item.Id
                         };
 
-                        await itemCase.Save(_dbContext);
+                        await itemCase.Create(_dbContext);
                     }
                 } 
             }
