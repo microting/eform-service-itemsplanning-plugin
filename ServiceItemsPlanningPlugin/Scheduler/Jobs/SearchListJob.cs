@@ -21,6 +21,7 @@ SOFTWARE.
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using eFormShared;
 using ServiceItemsPlanningPlugin.Extensions;
 using ServiceItemsPlanningPlugin.Messages;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +52,9 @@ namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
             var lastDayOfMonth = new DateTime(now.Year, now.Month, 1).AddMonths(1).AddDays(-1).Day;
 
 
-            var baseQuery = _dbContext.ItemLists.Where(x => x.RepeatUntil == null || DateTime.UtcNow <= x.RepeatUntil);
+            var baseQuery = _dbContext.ItemLists.Where(x =>
+                (x.RepeatUntil == null || DateTime.UtcNow <= x.RepeatUntil) &&
+                x.WorkflowState != Constants.WorkflowStates.Removed);
 
             var dailyListsQuery = baseQuery
                 .Where(x => x.RepeatType == RepeatType.Day 
