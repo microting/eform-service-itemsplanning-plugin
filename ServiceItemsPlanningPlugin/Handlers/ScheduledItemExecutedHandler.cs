@@ -66,10 +66,12 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 {
                     var siteId = int.Parse(siteIdString);
                     var caseToDelete = await _dbContext.ItemCases.LastOrDefaultAsync(x => x.ItemId == item.Id);
+                    Case_Dto caseDto = null;
                     
                     if (caseToDelete != null)
                     {
-                        _sdkCore.CaseDelete(caseToDelete.MicrotingSdkCaseId.ToString());
+                        caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
+                        _sdkCore.CaseDelete(caseDto.MicrotingUId);
                         caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
                         await caseToDelete.Update(_dbContext);
                     }
@@ -82,7 +84,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
-                    Case_Dto caseDto = _sdkCore.CaseLookupMUId(caseId);
+                    caseDto = _sdkCore.CaseLookupMUId(caseId);
                     if (caseDto.CaseId != null)
                     {
                         var itemCase = new ItemCase()
