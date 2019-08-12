@@ -83,8 +83,11 @@ namespace ServiceItemsPlanningPlugin
         {
             Case_Dto trigger = (Case_Dto)sender;
 
-            string caseId = trigger.MicrotingUId;
-            _bus.SendLocal(new eFormCompleted(caseId));
+            if (trigger.CaseId != null)
+            {
+                int caseId = (int)trigger.CaseId;
+                _bus.SendLocal(new eFormCompleted(caseId));
+            }
         }
 
         public void CaseDeleted(object sender, EventArgs args)

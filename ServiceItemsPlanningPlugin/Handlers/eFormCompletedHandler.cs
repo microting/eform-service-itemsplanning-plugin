@@ -20,7 +20,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
         
         public async Task Handle(eFormCompleted message)
         {
-            ItemCase itemCase = _dbContext.ItemCases.SingleOrDefault(x => x.MicrotingSdkCaseId == int.Parse(message.caseId));
+            ItemCase itemCase = _dbContext.ItemCases.SingleOrDefault(x => x.MicrotingSdkCaseId == message.caseId);
             if (itemCase != null)
             {
                 itemCase.Status = 100;

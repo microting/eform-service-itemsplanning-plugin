@@ -2,9 +2,9 @@ namespace ServiceItemsPlanningPlugin.Messages
 {
     public class eFormCompleted
     {
-        public string caseId { get; protected set; }
+        public int caseId { get; protected set; }
 
-        public eFormCompleted(string caseId)
+        public eFormCompleted(int caseId)
         {
             this.caseId = caseId;
         }
