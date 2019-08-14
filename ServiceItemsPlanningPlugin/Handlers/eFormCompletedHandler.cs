@@ -24,6 +24,12 @@ namespace ServiceItemsPlanningPlugin.Handlers
             if (itemCase != null)
             {
                 itemCase.Status = 100;
+                var caseDto = _sdkCore.CaseReadByCaseId(message.caseId);
+                var microtingUId = caseDto.MicrotingUId;
+                var microtingCheckUId = caseDto.CheckUId;
+                var theCase = _sdkCore.CaseRead(microtingUId, microtingCheckUId);
+
+                itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
                 await itemCase.Update(_dbContext);
             }
         }
