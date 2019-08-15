@@ -34,20 +34,23 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 var microtingCheckUId = caseDto.CheckUId;
                 var theCase = _sdkCore.CaseRead(microtingUId, microtingCheckUId);
 
-                SetFieldValue(itemCase, theCase.Id);
+                itemCase = SetFieldValue(itemCase, theCase.Id);
 
                 itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                itemCase.DoneByUserId = itemCase.MicrotingSdkSiteId;
+                var site = _sdkCore.SiteRead(itemCase.MicrotingSdkSiteId);
+                itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
                 await itemCase.Update(_dbContext);
             }
         }
 
-        private void SetFieldValue(ItemCase itemCase, int caseId)
+        private ItemCase SetFieldValue(ItemCase itemCase, int caseId)
         {
             Item item = _dbContext.Items.SingleOrDefault(x => x.Id == itemCase.ItemId);
             ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
             List<FieldValue> fieldValues = _sdkCore.Advanced_FieldValueReadList(new List<int>(caseId));
 
-            if (itemList == null) return;
+            if (itemList == null) return itemCase;
 
             if (itemList.SdkFieldEnabled1)
             {
@@ -99,6 +102,8 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 itemCase.SdkFieldValue10 =
                     fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId10)?.ValueReadable;
             }
+
+            return itemCase;
         }
     }
 }
