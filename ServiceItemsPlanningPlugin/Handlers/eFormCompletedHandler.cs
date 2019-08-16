@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Dto;
 using Microting.eForm.Infrastructure.Models;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
@@ -48,7 +47,9 @@ namespace ServiceItemsPlanningPlugin.Handlers
         {
             Item item = _dbContext.Items.SingleOrDefault(x => x.Id == itemCase.ItemId);
             ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
-            List<FieldValue> fieldValues = _sdkCore.Advanced_FieldValueReadList(new List<int>(caseId));
+            List<int> caseIds = new List<int>();
+            caseIds.Add(itemCase.MicrotingSdkCaseId);
+            List<FieldValue> fieldValues = _sdkCore.Advanced_FieldValueReadList(caseIds);
 
             if (itemList == null) return itemCase;
 
