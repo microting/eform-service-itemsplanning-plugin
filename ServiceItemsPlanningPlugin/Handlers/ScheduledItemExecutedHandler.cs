@@ -76,7 +76,10 @@ namespace ServiceItemsPlanningPlugin.Handlers
                         await caseToDelete.Update(_dbContext);
                     }
 
-                    mainElement.Label = item.Name;
+                    mainElement.Label = item.ItemNumber.IsNullOrEmpty() ? "" : item.ItemNumber;
+                    mainElement.Label += mainElement.Label.IsNullOrEmpty() ? $"{item.Name}" : $" - {item.Name}";
+                    mainElement.Label += mainElement.Label.IsNullOrEmpty() ? $"{item.BuildYear}" : $" - {item.BuildYear}";
+                    mainElement.Label += mainElement.Label.IsNullOrEmpty() ? $"{item.Type}" : $" - {item.Type}";
                     mainElement.ElementList[0].Label = mainElement.Label;
                     mainElement.CheckListFolderName = folderId;
                     mainElement.StartDate = DateTime.Now.ToUniversalTime();
