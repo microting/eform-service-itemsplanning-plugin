@@ -220,7 +220,7 @@ namespace ServiceItemsPlanningPlugin
             _scheduleTimer = new Timer(async x =>
             {
                 await job.Execute();
-            }, null, TimeSpan.Zero, TimeSpan.FromMinutes(15));
+            }, null, TimeSpan.Zero, TimeSpan.FromMinutes(60));
         }
     }
 }
