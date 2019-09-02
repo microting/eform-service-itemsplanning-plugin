@@ -73,9 +73,9 @@ namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
                                  (now.AddMonths(-x.RepeatEvery).Month >= x.LastExecutedTime.Value.Month 
                                   || now.AddMonths(-x.RepeatEvery).Year > x.LastExecutedTime.Value.Year))));
             
-            Console.WriteLine($"Daily lists query: {dailyListsQuery.ToSql()}");
-            Console.WriteLine($"Weekly lists query: {weeklyListsQuery.ToSql()}");
-            Console.WriteLine($"Monthly lists query: {monthlyListsQuery.ToSql()}");
+//            Console.WriteLine($"Daily lists query: {dailyListsQuery.ToSql()}");
+//            Console.WriteLine($"Weekly lists query: {weeklyListsQuery.ToSql()}");
+//            Console.WriteLine($"Monthly lists query: {monthlyListsQuery.ToSql()}");
             
             var dailyLists = await dailyListsQuery.ToListAsync();
             var weeklyLists = await weeklyListsQuery.ToListAsync();
