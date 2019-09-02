@@ -69,14 +69,13 @@ namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
             var monthlyListsQuery = baseQuery
                 .Where(x => x.RepeatType == RepeatType.Month 
                             && (x.LastExecutedTime == null || 
-                                ((x.DayOfMonth <= now.Day || now.Day == lastDayOfMonth) && 
-                                 (now.AddMonths(-x.RepeatEvery).Month >= x.LastExecutedTime.Value.Month 
-                                  || now.AddMonths(-x.RepeatEvery).Year > x.LastExecutedTime.Value.Year))));
+                                ((x.DayOfMonth <= now.Day || now.Day == lastDayOfMonth) &&
+                                 ((now.Month - x.LastExecutedTime.Value.Month) + 12 * (now.Year - x.LastExecutedTime.Value.Year) >= x.RepeatEvery))));
             
 //            Console.WriteLine($"Daily lists query: {dailyListsQuery.ToSql()}");
 //            Console.WriteLine($"Weekly lists query: {weeklyListsQuery.ToSql()}");
 //            Console.WriteLine($"Monthly lists query: {monthlyListsQuery.ToSql()}");
-            
+
             var dailyLists = await dailyListsQuery.ToListAsync();
             var weeklyLists = await weeklyListsQuery.ToListAsync();
             var monthlyLists = await monthlyListsQuery.ToListAsync();
