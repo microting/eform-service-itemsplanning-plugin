@@ -29,6 +29,7 @@ using Microting.eForm.Infrastructure.Constants;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
 using OpenStack.NetCoreSwiftClient.Extensions;
+using Rebus.Bus;
 using Rebus.Handlers;
 
 namespace ServiceItemsPlanningPlugin.Handlers
@@ -37,11 +38,13 @@ namespace ServiceItemsPlanningPlugin.Handlers
     {
         private readonly ItemsPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
+        private readonly IBus _bus;
 
-        public ScheduledItemExecutedHandler(eFormCore.Core sdkCore, ItemsPlanningPnDbContext dbContext)
+        public ScheduledItemExecutedHandler(eFormCore.Core sdkCore, ItemsPlanningPnDbContext dbContext, IBus bus)
         {
             _sdkCore = sdkCore;
             _dbContext = dbContext;
+            _bus = bus;
         }
 
         #pragma warning disable 1998
@@ -62,46 +65,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
             foreach (var item in list.Items)
             {
-                foreach (var siteIdString in siteIds.Value.Split(','))
-                {
-                    var siteId = int.Parse(siteIdString);
-                    var caseToDelete = await _dbContext.ItemCases.LastOrDefaultAsync(x => x.ItemId == item.Id);
-                    Case_Dto caseDto = null;
-                    
-                    if (caseToDelete != null)
-                    {
-                        caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
-                        _sdkCore.CaseDelete(caseDto.MicrotingUId);
-                        caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
-                        await caseToDelete.Update(_dbContext);
-                    }
-
-                    mainElement.Label = item.ItemNumber.IsNullOrEmpty() ? "" : item.ItemNumber;
-                    mainElement.Label += mainElement.Label.IsNullOrEmpty() ? $"{item.Name}" : $" - {item.Name}";
-                    mainElement.Label += mainElement.Label.IsNullOrEmpty() ? $"{item.BuildYear}" : $" - {item.BuildYear}";
-                    mainElement.Label += mainElement.Label.IsNullOrEmpty() ? $"{item.Type}" : $" - {item.Type}";
-                    mainElement.ElementList[0].Label = mainElement.Label;
-                    mainElement.CheckListFolderName = folderId;
-                    mainElement.StartDate = DateTime.Now.ToUniversalTime();
-                    mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
-
-                    var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
-
-                    caseDto = _sdkCore.CaseLookupMUId(caseId);
-                    if (caseDto.CaseId != null)
-                    {
-                        var itemCase = new ItemCase()
-                        {
-                            MicrotingSdkSiteId = siteId,
-                            MicrotingSdkeFormId = list.RelatedEFormId,
-                            Status = 66,
-                            MicrotingSdkCaseId = (int)caseDto.CaseId,
-                            ItemId = item.Id
-                        };
-
-                        await itemCase.Create(_dbContext);
-                    }
-                } 
+                await _bus.SendLocal(new ItemCaseCreate(list.Id, item.Id));
             }
         }
 

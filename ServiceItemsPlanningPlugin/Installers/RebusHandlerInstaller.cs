@@ -34,6 +34,7 @@ namespace ServiceItemsPlanningPlugin.Installers
             container.Register(Component.For<IHandleMessages<ScheduledItemExecuted>>().ImplementedBy<ScheduledItemExecutedHandler>().LifestyleTransient());
             container.Register(Component.For<IHandleMessages<eFormCompleted>>().ImplementedBy<EFormCompletedHandler>().LifestyleTransient());
             container.Register(Component.For<IHandleMessages<eFormRetrieved>>().ImplementedBy<EFormRetrievedHandler>().LifestyleTransient());
+            container.Register(Component.For<IHandleMessages<ItemCaseCreate>>().ImplementedBy<ItemCaseCreateHandler>().LifestyleTransient());
         }
     }
 }
