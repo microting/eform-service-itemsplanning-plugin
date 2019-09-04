@@ -20,6 +20,7 @@ SOFTWARE.
 
 using System;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Castle.MicroKernel.Registration;
@@ -46,8 +47,8 @@ namespace ServiceItemsPlanningPlugin
         private bool _coreStatChanging;
         private bool _coreAvailable;
         private string _serviceLocation;
-        private const int MaxParallelism = 1;
-        private const int NumberOfWorkers = 1;
+        private static int _maxParallelism = 1;
+        private static int _numberOfWorkers = 1;
         private ItemsPlanningPnDbContext _dbContext;
         private Timer _scheduleTimer;
 
@@ -143,13 +144,21 @@ namespace ServiceItemsPlanningPlugin
 
                     StartSdkCoreSqlOnly(sdkConnectionString);
                     
+                    string temp = _dbContext.PluginConfigurationValues
+                        .SingleOrDefault(x => x.Name == "ItemsPlanningBaseSettings:MaxParallelism")?.Value;
+                    _maxParallelism = string.IsNullOrEmpty(temp) ? 1 : int.Parse(temp);
+
+                    temp = _dbContext.PluginConfigurationValues
+                        .SingleOrDefault(x => x.Name == "ItemsPlanningBaseSettings:NumberOfWorkers")?.Value;
+                    _numberOfWorkers = string.IsNullOrEmpty(temp) ? 1 : int.Parse(temp);
+                    
                     _container = new WindsorContainer();
                     _container.Register(Component.For<IWindsorContainer>().Instance(_container));
                     _container.Register(Component.For<ItemsPlanningPnDbContext>().Instance(_dbContext));
                     _container.Register(Component.For<eFormCore.Core>().Instance(_sdkCore));
                     _container.Install(
                         new RebusHandlerInstaller()
-                        , new RebusInstaller(connectionString, MaxParallelism, NumberOfWorkers)
+                        , new RebusInstaller(connectionString, _maxParallelism, _numberOfWorkers)
                     );
                     _container.Register(Component.For<SearchListJob>());
 
