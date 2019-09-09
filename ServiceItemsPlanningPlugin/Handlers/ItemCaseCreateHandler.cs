@@ -49,9 +49,20 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     }
 
                     mainElement.Label = string.IsNullOrEmpty(item.ItemNumber) ? "" : item.ItemNumber;
-                    mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.Name}" : $" - {item.Name}";
-                    mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.BuildYear}" : $" - {item.BuildYear}";
-                    mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.Type}" : $" - {item.Type}";
+                    if (string.IsNullOrEmpty(item.Name))
+                    {
+                        mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.Name}" : $" - {item.Name}";
+                    }
+
+                    if (string.IsNullOrEmpty(item.BuildYear))
+                    {
+                        mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.BuildYear}" : $" - {item.BuildYear}";
+                    }
+
+                    if (string.IsNullOrEmpty(item.Type))
+                    {
+                        mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.Type}" : $" - {item.Type}";
+                    }
                     mainElement.ElementList[0].Label = mainElement.Label;
                     mainElement.CheckListFolderName = folderId;
                     mainElement.StartDate = DateTime.Now.ToUniversalTime();
