@@ -37,7 +37,8 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 foreach (var siteIdString in siteIds.Value.Split(','))
                 {
                     var siteId = int.Parse(siteIdString);
-                    var caseToDelete = await _dbContext.ItemCases.LastOrDefaultAsync(x => x.ItemId == item.Id);
+                    var caseToDelete = await _dbContext.ItemCases.
+                        LastOrDefaultAsync(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId);
                     Case_Dto caseDto = null;
                     
                     if (caseToDelete != null)
