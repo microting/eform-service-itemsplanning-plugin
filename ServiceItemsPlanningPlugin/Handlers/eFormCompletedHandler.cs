@@ -24,24 +24,114 @@ namespace ServiceItemsPlanningPlugin.Handlers
         
         public async Task Handle(eFormCompleted message)
         {
-            ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.MicrotingSdkCaseId == message.caseId);
+            ItemCaseSite itemCaseSite = await _dbContext.ItemCaseSites.SingleOrDefaultAsync(x => x.MicrotingSdkCaseId == message.caseId);
             
-            if (itemCase != null)
+            if (itemCaseSite != null)
             {
-                itemCase.Status = 100;
+                itemCaseSite.Status = 100;
                 var caseDto = _sdkCore.CaseReadByCaseId(message.caseId);
                 var microtingUId = caseDto.MicrotingUId;
                 var microtingCheckUId = caseDto.CheckUId;
                 var theCase = _sdkCore.CaseRead(microtingUId, microtingCheckUId);
 
-                itemCase = SetFieldValue(itemCase, theCase.Id);
+                itemCaseSite = SetFieldValue(itemCaseSite, theCase.Id);
 
-                itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
-                itemCase.DoneByUserId = itemCase.MicrotingSdkSiteId;
-                var site = _sdkCore.SiteRead(itemCase.MicrotingSdkSiteId);
-                itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
-                await itemCase.Update(_dbContext);
+                itemCaseSite.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                itemCaseSite.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
+                var site = _sdkCore.SiteRead(itemCaseSite.MicrotingSdkSiteId);
+                itemCaseSite.DoneByUserName = $"{site.FirstName} {site.LastName}";
+                await itemCaseSite.Update(_dbContext);
+
+                ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.Id == itemCaseSite.ItemCaseId);
+                if (itemCase.Status != 100)
+                {
+                    itemCase.Status = 100;
+                    itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                    itemCase.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
+                    itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
+
+                    itemCase = SetFieldValue(itemCase, theCase.Id);
+                    await itemCase.Update(_dbContext);
+                }
             }
+        }
+
+        private ItemCaseSite SetFieldValue(ItemCaseSite itemCaseSite, int caseId)
+        {
+            Item item = _dbContext.Items.SingleOrDefault(x => x.Id == itemCaseSite.ItemId);
+            ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
+            List<int> caseIds = new List<int>();
+            caseIds.Add(itemCaseSite.MicrotingSdkCaseId);
+            List<FieldValue> fieldValues = _sdkCore.Advanced_FieldValueReadList(caseIds);
+
+            if (itemList == null) return itemCaseSite;
+
+            if (itemList.SdkFieldEnabled1)
+            {
+                itemCaseSite.SdkFieldValue1 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId1)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled2)
+            {
+                itemCaseSite.SdkFieldValue2 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId2)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled3)
+            {
+                itemCaseSite.SdkFieldValue3 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId3)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled4)
+            {
+                itemCaseSite.SdkFieldValue4 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId4)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled5)
+            {
+                itemCaseSite.SdkFieldValue5 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId5)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled6)
+            {
+                itemCaseSite.SdkFieldValue6 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId6)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled7)
+            {
+                itemCaseSite.SdkFieldValue7 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId7)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled8)
+            {
+                itemCaseSite.SdkFieldValue8 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId8)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled9)
+            {
+                itemCaseSite.SdkFieldValue9 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId9)?.ValueReadable;
+            }
+            if (itemList.SdkFieldEnabled10)
+            {
+                itemCaseSite.SdkFieldValue10 =
+                    fieldValues.SingleOrDefault(x => x.FieldId == itemList.SdkFieldId10)?.ValueReadable;
+            }
+            if (itemList.NumberOfImagesEnabled)
+            {
+                itemCaseSite.NumberOfImages = 0;
+                foreach (FieldValue fieldValue in fieldValues)
+                {
+                    if (fieldValue.FieldType == Constants.FieldTypes.Picture)
+                    {
+                        if (fieldValue.UploadedData != null)
+                        {
+                            itemCaseSite.NumberOfImages += 1;
+                        }
+                    }
+                }
+            }
+
+            return itemCaseSite;
         }
 
         private ItemCase SetFieldValue(ItemCase itemCase, int caseId)

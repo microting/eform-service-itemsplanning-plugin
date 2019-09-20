@@ -29,10 +29,23 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
             if (item != null)
             {
-                var siteIds = _dbContext.PluginConfigurationValues.FirstOrDefault(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
+                var siteIds = await _dbContext.PluginConfigurationValues.FirstOrDefaultAsync(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
                 var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
                 var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
                 string folderId = getFolderId(list.Name).ToString();
+
+                ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id);
+
+                if (itemCase == null)
+                {
+                    itemCase = new ItemCase()
+                    {
+                        ItemId = item.Id,
+                        Status = 66,
+                        MicrotingSdkeFormId = list.RelatedEFormId
+                    };
+                    await itemCase.Create(_dbContext);
+                }
                 
                 foreach (var siteIdString in siteIds.Value.Split(','))
                 {
@@ -74,18 +87,19 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     caseDto = _sdkCore.CaseLookupMUId(caseId);
                     if (caseDto.CaseId != null)
                     {
-                        var itemCase = new ItemCase()
+                        var itemCaseSite = new ItemCaseSite()
                         {
                             MicrotingSdkSiteId = siteId,
                             MicrotingSdkeFormId = list.RelatedEFormId,
                             Status = 66,
                             MicrotingSdkCaseId = (int)caseDto.CaseId,
-                            ItemId = item.Id
+                            ItemId = item.Id,
+                            ItemCaseId = itemCase.Id
                         };
 
-                        await itemCase.Create(_dbContext);
+                        await itemCaseSite.Create(_dbContext);
                     }
-                } 
+                }
             }
         }
         
