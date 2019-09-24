@@ -54,6 +54,19 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     itemCase = SetFieldValue(itemCase, theCase.Id);
                     await itemCase.Update(_dbContext);
                 }
+                
+                RetractFromMicroting(itemCase.Id);
+            }
+        }
+
+        private void RetractFromMicroting(int itemCaseId)
+        {
+            List<ItemCaseSite> itemCaseSites =
+                _dbContext.ItemCaseSites.Where(x => x.ItemCaseId == itemCaseId).ToList();
+            
+            foreach (ItemCaseSite caseSite in itemCaseSites)
+            {
+                _sdkCore.CaseDelete(caseSite.MicrotingSdkCaseId.ToString());
             }
         }
 
