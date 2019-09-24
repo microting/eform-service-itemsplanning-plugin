@@ -47,6 +47,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 {
                     itemCase.Status = 100;
                     itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                    itemCase.MicrotingSdkCaseId = itemCaseSite.MicrotingSdkCaseId;
                     itemCase.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
                     itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
 
