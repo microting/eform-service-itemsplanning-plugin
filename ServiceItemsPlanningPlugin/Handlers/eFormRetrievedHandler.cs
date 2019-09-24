@@ -20,7 +20,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
         public async Task Handle(eFormRetrieved message)
         {
-            ItemCaseSite itemCaseSite = _dbContext.ItemCaseSites.SingleOrDefault(x => x.MicrotingSdkCaseId == int.Parse(message.caseId));
+            ItemCaseSite itemCaseSite = _dbContext.ItemCaseSites.SingleOrDefault(x => x.MicrotingSdkCaseId == message.caseId);
             if (itemCaseSite != null)
             {
                 if (itemCaseSite.Status < 77)

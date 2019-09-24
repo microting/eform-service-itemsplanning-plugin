@@ -32,30 +32,34 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 var caseDto = _sdkCore.CaseReadByCaseId(message.caseId);
                 var microtingUId = caseDto.MicrotingUId;
                 var microtingCheckUId = caseDto.CheckUId;
-                var theCase = _sdkCore.CaseRead(microtingUId, microtingCheckUId);
-
-                itemCaseSite = SetFieldValue(itemCaseSite, theCase.Id);
-
-                itemCaseSite.MicrotingSdkCaseDoneAt = theCase.DoneAt;
-                itemCaseSite.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
-                var site = _sdkCore.SiteRead(itemCaseSite.MicrotingSdkSiteId);
-                itemCaseSite.DoneByUserName = $"{site.FirstName} {site.LastName}";
-                await itemCaseSite.Update(_dbContext);
-
-                ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.Id == itemCaseSite.ItemCaseId);
-                if (itemCase.Status != 100)
+//                if (microtingUId != null && microtingCheckUId != null) {}
+                if (microtingUId != null && microtingCheckUId != null)
                 {
-                    itemCase.Status = 100;
-                    itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
-                    itemCase.MicrotingSdkCaseId = itemCaseSite.MicrotingSdkCaseId;
-                    itemCase.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
-                    itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
+                    var theCase = _sdkCore.CaseRead((int)microtingUId, (int)microtingCheckUId);
 
-                    itemCase = SetFieldValue(itemCase, theCase.Id);
-                    await itemCase.Update(_dbContext);
-                }
+                    itemCaseSite = SetFieldValue(itemCaseSite, theCase.Id);
+
+                    itemCaseSite.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                    itemCaseSite.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
+                    var site = _sdkCore.SiteRead(itemCaseSite.MicrotingSdkSiteId);
+                    itemCaseSite.DoneByUserName = $"{site.FirstName} {site.LastName}";
+                    await itemCaseSite.Update(_dbContext);
+
+                    ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.Id == itemCaseSite.ItemCaseId);
+                    if (itemCase.Status != 100)
+                    {
+                        itemCase.Status = 100;
+                        itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                        itemCase.MicrotingSdkCaseId = itemCaseSite.MicrotingSdkCaseId;
+                        itemCase.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
+                        itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
+
+                        itemCase = SetFieldValue(itemCase, theCase.Id);
+                        await itemCase.Update(_dbContext);
+                    }
                 
-                RetractFromMicroting(itemCase.Id);
+                    RetractFromMicroting(itemCase.Id);
+                }
             }
         }
 
@@ -66,7 +70,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
             
             foreach (ItemCaseSite caseSite in itemCaseSites)
             {
-                _sdkCore.CaseDelete(caseSite.MicrotingSdkCaseId.ToString());
+                _sdkCore.CaseDelete(caseSite.MicrotingSdkCaseId);
             }
         }
 

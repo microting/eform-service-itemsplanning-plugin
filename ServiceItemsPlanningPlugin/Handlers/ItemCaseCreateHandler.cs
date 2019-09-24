@@ -32,7 +32,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 var siteIds = await _dbContext.PluginConfigurationValues.FirstOrDefaultAsync(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
                 var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
                 var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
-                string folderId = getFolderId(list.Name).ToString();
+                string folderId = GetFolderId(list.Name).ToString();
 
                 ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id);
 
@@ -57,7 +57,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     if (caseToDelete != null)
                     {
                         caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
-                        _sdkCore.CaseDelete(caseDto.MicrotingUId);
+                        if (caseDto.MicrotingUId != null) _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
                         caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
                         await caseToDelete.Update(_dbContext);
                     }
@@ -84,8 +84,8 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
 
-                    caseDto = _sdkCore.CaseLookupMUId(caseId);
-                    if (caseDto.CaseId != null)
+                    if (caseId != null) caseDto = _sdkCore.CaseLookupMUId((int) caseId);
+                    if (caseDto?.CaseId != null)
                     {
                         var itemCaseSite = new ItemCaseSite()
                         {
@@ -103,7 +103,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
             }
         }
         
-        private int getFolderId(string name)
+        private int GetFolderId(string name)
         {
             List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true);
 
@@ -114,7 +114,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 if (folderDto.Name == name)
                 {
                     folderAlreadyExist = true;
-                    microtingUId = (int)folderDto.MicrotingUId;
+                    if (folderDto.MicrotingUId != null) microtingUId = (int) folderDto.MicrotingUId;
                 }
             }
 
@@ -127,7 +127,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 {
                     if (folderDto.Name == name)
                     {
-                        microtingUId = (int)folderDto.MicrotingUId;
+                        if (folderDto.MicrotingUId != null) microtingUId = (int) folderDto.MicrotingUId;
                     }
                 }
             }
