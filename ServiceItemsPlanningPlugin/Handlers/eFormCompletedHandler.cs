@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microting.eForm.Dto;
 using Microting.eForm.Infrastructure.Constants;
 using Microting.eForm.Infrastructure.Models;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
@@ -70,7 +71,8 @@ namespace ServiceItemsPlanningPlugin.Handlers
             
             foreach (ItemCaseSite caseSite in itemCaseSites)
             {
-                _sdkCore.CaseDelete(caseSite.MicrotingSdkCaseId);
+                Case_Dto caseDto = _sdkCore.CaseReadByCaseId(caseSite.MicrotingSdkCaseId);
+                if (caseDto.MicrotingUId != null) _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
             }
         }
 
