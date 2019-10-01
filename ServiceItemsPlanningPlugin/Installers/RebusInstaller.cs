@@ -52,7 +52,6 @@ namespace ServiceItemsPlanningPlugin.Installers
                 {
                     o.SetMaxParallelism(_maxParallelism);
                     o.SetNumberOfWorkers(_numberOfWorkers);
-                    o.LogPipeline(verbose:true);
                 })
                 .Start();
         }
