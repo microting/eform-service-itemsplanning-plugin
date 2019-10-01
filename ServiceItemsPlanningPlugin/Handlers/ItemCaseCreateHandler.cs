@@ -50,7 +50,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 foreach (var siteIdString in siteIds.Value.Split(','))
                 {
                     var siteId = int.Parse(siteIdString);
-                    var caseToDelete = await _dbContext.ItemCases.
+                    var caseToDelete = await _dbContext.ItemCaseSites.
                         LastOrDefaultAsync(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId);
                     Case_Dto caseDto = null;
                     
@@ -82,23 +82,30 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     mainElement.StartDate = DateTime.Now.ToUniversalTime();
                     mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
 
-                    var caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
+                    ItemCaseSite itemCaseSite =
+                        await _dbContext.ItemCaseSites.SingleOrDefaultAsync(x => x.ItemCaseId == itemCase.Id);
 
-                    if (caseId != null) caseDto = _sdkCore.CaseLookupMUId((int) caseId);
-                    if (caseDto?.CaseId != null)
+                    if (itemCaseSite == null)
                     {
-                        var itemCaseSite = new ItemCaseSite()
+                        itemCaseSite = new ItemCaseSite()
                         {
                             MicrotingSdkSiteId = siteId,
                             MicrotingSdkeFormId = list.RelatedEFormId,
                             Status = 66,
-                            MicrotingSdkCaseId = (int)caseDto.CaseId,
                             ItemId = item.Id,
                             ItemCaseId = itemCase.Id
                         };
 
                         await itemCaseSite.Create(_dbContext);
                     }
+
+                    if (itemCaseSite.MicrotingSdkCaseId >= 1) continue;
+                    int? caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
+                    if (caseId != null) caseDto = _sdkCore.CaseLookupMUId((int) caseId);
+                    if (caseDto?.CaseId != null) itemCaseSite.MicrotingSdkCaseId = (int) caseDto.CaseId;
+                    await itemCaseSite.Update(_dbContext);
+
+
                 }
             }
         }
