@@ -65,7 +65,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
             foreach (var item in list.Items)
             {
-                await _bus.SendLocal(new ItemCaseCreate(list.Id, item.Id));
+                await _bus.SendLocal(new ItemCaseCreate(list.Id, item.Id, list.RelatedEFormId, list.Name));
             }
         }
 

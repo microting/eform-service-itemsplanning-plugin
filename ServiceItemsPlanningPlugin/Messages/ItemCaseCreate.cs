@@ -2,13 +2,17 @@ namespace ServiceItemsPlanningPlugin.Messages
 {
     public class ItemCaseCreate
     {
-        public int itemId { get; }
-        public int itemListId { get; }
+        public int ItemId { get; }
+        public int ItemListId { get; }
+        public int RelatedEFormId { get; set; }
+        public string Name { get; set; }
 
-        public ItemCaseCreate(int itemListId, int itemId)
+        public ItemCaseCreate(int itemListId, int itemId, int relatedEFormId, string name)
         {
-            this.itemListId = itemListId;
-            this.itemId = itemId;
+            ItemListId = itemListId;
+            ItemId = itemId;
+            RelatedEFormId = relatedEFormId;
+            Name = name;
         }
         
     }

@@ -25,14 +25,13 @@ namespace ServiceItemsPlanningPlugin.Handlers
         
         public async Task Handle(ItemCaseCreate message)
         {
-            Item item = await _dbContext.Items.SingleOrDefaultAsync(x => x.Id == message.itemId);
+            Item item = await _dbContext.Items.SingleOrDefaultAsync(x => x.Id == message.ItemId);
 
             if (item != null)
             {
                 var siteIds = await _dbContext.PluginConfigurationValues.FirstOrDefaultAsync(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
-                var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
-                var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
-                string folderId = GetFolderId(list.Name).ToString();
+                var mainElement = _sdkCore.TemplateRead(message.RelatedEFormId);
+                string folderId = GetFolderId(message.Name).ToString();
 
                 ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id && x.WorkflowState != Constants.WorkflowStates.Retracted);
                 if (itemCase != null)
@@ -45,7 +44,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 {
                     ItemId = item.Id,
                     Status = 66,
-                    MicrotingSdkeFormId = list.RelatedEFormId
+                    MicrotingSdkeFormId = message.RelatedEFormId
                 };
                 await itemCase.Create(_dbContext);
 
@@ -92,7 +91,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                         itemCaseSite = new ItemCaseSite()
                         {
                             MicrotingSdkSiteId = siteId,
-                            MicrotingSdkeFormId = list.RelatedEFormId,
+                            MicrotingSdkeFormId = message.RelatedEFormId,
                             Status = 66,
                             ItemId = item.Id,
                             ItemCaseId = itemCase.Id
