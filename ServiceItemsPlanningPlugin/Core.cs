@@ -32,6 +32,7 @@ using Microting.WindowsService.BasePn;
 using Rebus.Bus;
 using ServiceItemsPlanningPlugin.Installers;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
 using ServiceItemsPlanningPlugin.Messages;
 using ServiceItemsPlanningPlugin.Scheduler.Jobs;
 
@@ -51,6 +52,7 @@ namespace ServiceItemsPlanningPlugin
         private static int _numberOfWorkers = 1;
         private ItemsPlanningPnDbContext _dbContext;
         private Timer _scheduleTimer;
+        private DbContextHelper _dbContextHelper;
 
         public void CoreEventException(object sender, EventArgs args)
         {
@@ -138,6 +140,8 @@ namespace ServiceItemsPlanningPlugin
 
                     _dbContext = contextFactory.CreateDbContext(new[] { connectionString });
                     _dbContext.Database.Migrate();
+                    
+                    _dbContextHelper = new DbContextHelper(connectionString);
 
                     _coreAvailable = true;
                     _coreStatChanging = false;
@@ -154,7 +158,7 @@ namespace ServiceItemsPlanningPlugin
                     
                     _container = new WindsorContainer();
                     _container.Register(Component.For<IWindsorContainer>().Instance(_container));
-                    _container.Register(Component.For<ItemsPlanningPnDbContext>().Instance(_dbContext));
+                    _container.Register(Component.For<DbContextHelper>().Instance(_dbContextHelper));
                     _container.Register(Component.For<eFormCore.Core>().Instance(_sdkCore));
                     _container.Install(
                         new RebusHandlerInstaller()

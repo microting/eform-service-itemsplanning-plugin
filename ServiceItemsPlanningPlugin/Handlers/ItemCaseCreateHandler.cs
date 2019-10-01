@@ -8,6 +8,7 @@ using Microting.eForm.Infrastructure.Constants;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
 using Rebus.Handlers;
+using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
 using ServiceItemsPlanningPlugin.Messages;
 
 namespace ServiceItemsPlanningPlugin.Handlers
@@ -17,10 +18,10 @@ namespace ServiceItemsPlanningPlugin.Handlers
         private readonly ItemsPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
         
-        public ItemCaseCreateHandler(eFormCore.Core sdkCore, ItemsPlanningPnDbContext dbContext)
+        public ItemCaseCreateHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)
         {
             _sdkCore = sdkCore;
-            _dbContext = dbContext;
+            _dbContext = dbContextHelper.GetDbContext();
         }
         
         public async Task Handle(ItemCaseCreate message)

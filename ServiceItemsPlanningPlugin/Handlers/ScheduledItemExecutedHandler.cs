@@ -31,6 +31,7 @@ using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
 using OpenStack.NetCoreSwiftClient.Extensions;
 using Rebus.Bus;
 using Rebus.Handlers;
+using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
 
 namespace ServiceItemsPlanningPlugin.Handlers
 {
@@ -40,10 +41,10 @@ namespace ServiceItemsPlanningPlugin.Handlers
         private readonly eFormCore.Core _sdkCore;
         private readonly IBus _bus;
 
-        public ScheduledItemExecutedHandler(eFormCore.Core sdkCore, ItemsPlanningPnDbContext dbContext, IBus bus)
+        public ScheduledItemExecutedHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper, IBus bus)
         {
             _sdkCore = sdkCore;
-            _dbContext = dbContext;
+            _dbContext = dbContextHelper.GetDbContext();
             _bus = bus;
         }
 
@@ -51,7 +52,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
         public async Task Handle(ScheduledItemExecuted message)
         {
             var siteIds = _dbContext.PluginConfigurationValues.FirstOrDefault(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
-            var list = await _dbContext.ItemLists.FindAsync(message.itemListId);
+            var list = await _dbContext.ItemLists.SingleOrDefaultAsync(x => x.Id == message.itemListId);
             var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
             string folderId = getFolderId(list.Name).ToString();
 
