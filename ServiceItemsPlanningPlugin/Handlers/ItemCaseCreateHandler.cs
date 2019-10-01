@@ -34,19 +34,18 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
                 string folderId = GetFolderId(list.Name).ToString();
 
-                ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id);
-
-                if (itemCase == null)
-                {
-                    itemCase = new ItemCase()
-                    {
-                        ItemId = item.Id,
-                        Status = 66,
-                        MicrotingSdkeFormId = list.RelatedEFormId
-                    };
-                    await itemCase.Create(_dbContext);
-                }
+                ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id && x.WorkflowState != Constants.WorkflowStates.Retracted);
+                itemCase.WorkflowState = Constants.WorkflowStates.Retracted;
+                await itemCase.Update(_dbContext);
                 
+                itemCase = new ItemCase()
+                {
+                    ItemId = item.Id,
+                    Status = 66,
+                    MicrotingSdkeFormId = list.RelatedEFormId
+                };
+                await itemCase.Create(_dbContext);
+
                 foreach (var siteIdString in siteIds.Value.Split(','))
                 {
                     var siteId = int.Parse(siteIdString);
