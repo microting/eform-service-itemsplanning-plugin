@@ -85,7 +85,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
 
                     ItemCaseSite itemCaseSite =
-                        await _dbContext.ItemCaseSites.SingleOrDefaultAsync(x => x.ItemCaseId == itemCase.Id);
+                        await _dbContext.ItemCaseSites.SingleOrDefaultAsync(x => x.ItemCaseId == itemCase.Id && x.MicrotingSdkSiteId == siteId);
 
                     if (itemCaseSite == null)
                     {
