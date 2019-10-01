@@ -28,6 +28,7 @@ using Microting.eForm.Infrastructure.Constants;
 using Microting.ItemsPlanningBase.Infrastructure.Data;
 using Microting.ItemsPlanningBase.Infrastructure.Enums;
 using Rebus.Bus;
+using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
 
 namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
 {
@@ -39,9 +40,9 @@ namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
         private readonly ItemsPlanningPnDbContext _dbContext;
         private readonly IBus _bus;
 
-        public SearchListJob(ItemsPlanningPnDbContext dbContext, IBus bus)
+        public SearchListJob(DbContextHelper dbContextHelper, IBus bus)
         {
-            _dbContext = dbContext;
+            _dbContext = dbContextHelper.GetDbContext();
             _bus = bus;
         }
 
