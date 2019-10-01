@@ -35,8 +35,11 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 string folderId = GetFolderId(list.Name).ToString();
 
                 ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id && x.WorkflowState != Constants.WorkflowStates.Retracted);
-                itemCase.WorkflowState = Constants.WorkflowStates.Retracted;
-                await itemCase.Update(_dbContext);
+                if (itemCase != null)
+                {
+                    itemCase.WorkflowState = Constants.WorkflowStates.Retracted;
+                    await itemCase.Update(_dbContext);    
+                }
                 
                 itemCase = new ItemCase()
                 {
