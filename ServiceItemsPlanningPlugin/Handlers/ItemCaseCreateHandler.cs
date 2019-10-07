@@ -53,7 +53,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 {
                     var siteId = int.Parse(siteIdString);
                     var casesToDelete = _dbContext.ItemCaseSites.
-                        Where(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId);
+                        Where(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId && x.WorkflowState != Constants.WorkflowStates.Retracted);
 
                     foreach (ItemCaseSite caseToDelete in casesToDelete)
                     {
