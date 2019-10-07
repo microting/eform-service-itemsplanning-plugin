@@ -56,7 +56,6 @@ namespace ServiceItemsPlanningPlugin.Handlers
                         Where(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId);
 
                     foreach (ItemCaseSite caseToDelete in casesToDelete)
-                    foreach (ItemCaseSite caseToDelete in casesToDelete)
                     {
                         Case_Dto caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
                         if (caseDto.MicrotingUId != null) _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
