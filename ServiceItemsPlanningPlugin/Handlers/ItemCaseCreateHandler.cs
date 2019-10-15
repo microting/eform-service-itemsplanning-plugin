@@ -52,13 +52,12 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 foreach (var siteIdString in siteIds.Value.Split(','))
                 {
                     var siteId = int.Parse(siteIdString);
-                    var caseToDelete = await _dbContext.ItemCaseSites.
-                        LastOrDefaultAsync(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId);
-                    Case_Dto caseDto = null;
-                    
-                    if (caseToDelete != null)
+                    var casesToDelete = _dbContext.ItemCaseSites.
+                        Where(x => x.ItemId == item.Id && x.MicrotingSdkSiteId == siteId && x.WorkflowState != Constants.WorkflowStates.Retracted);
+
+                    foreach (ItemCaseSite caseToDelete in casesToDelete)
                     {
-                        caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
+                        Case_Dto caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
                         if (caseDto.MicrotingUId != null) _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
                         caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
                         await caseToDelete.Update(_dbContext);
@@ -103,11 +102,12 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     if (itemCaseSite.MicrotingSdkCaseId >= 1) continue;
                     int? caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
-                    if (caseId != null) caseDto = _sdkCore.CaseLookupMUId((int) caseId);
-                    if (caseDto?.CaseId != null) itemCaseSite.MicrotingSdkCaseId = (int) caseDto.CaseId;
-                    await itemCaseSite.Update(_dbContext);
-
-
+                    if (caseId != null)
+                    {
+                        Case_Dto caseDto = _sdkCore.CaseLookupMUId((int) caseId);
+                        if (caseDto?.CaseId != null) itemCaseSite.MicrotingSdkCaseId = (int) caseDto.CaseId;
+                        await itemCaseSite.Update(_dbContext);
+                    }
                 }
             }
         }
