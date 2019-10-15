@@ -5,8 +5,8 @@ if (( "$GIT_STATUS" > 0 )); then
 	git pull
 	cd eFormAPI/Plugins/ItemsPlanning.Pn/ItemsPlanning.Pn
 
-	dotnet add ServiceItemsPlanningPlugin.Pn.csproj package Microting.eForm
-	dotnet add ServiceItemsPlanningPlugin.Pn.csproj package Microting.ItemsPlanningBase
+	dotnet add ServiceItemsPlanningPlugin.csproj package Microting.eForm
+	dotnet add ServiceItemsPlanningPlugin.csproj package Microting.ItemsPlanningBase
 
 	EFORM_VERSION=`dotnet list package | grep 'Microting.eForm ' | cut -c64-71`
 	EFORM_PLUGINBASE_VERSION=`dotnet list package | grep 'Microting.ItemsPlanningBase' | cut -c64-71`
