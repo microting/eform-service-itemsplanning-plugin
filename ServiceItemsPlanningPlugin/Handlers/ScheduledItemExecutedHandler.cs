@@ -72,7 +72,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
         private int getFolderId(string name)
         {
-            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true);
+            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true).Result;
 
             bool folderAlreadyExist = false;
             int microtingUId = 0;
@@ -88,7 +88,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
             if (!folderAlreadyExist)
             {
                 _sdkCore.FolderCreate(name, "", null);
-                folderDtos = _sdkCore.FolderGetAll(true);
+                folderDtos = _sdkCore.FolderGetAll(true).Result;
                 
                 foreach (Folder_Dto folderDto in folderDtos)
                 {

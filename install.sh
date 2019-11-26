@@ -7,6 +7,7 @@ if [ ! -d "/var/www/microting/eform-service-itemsplanning-plugin" ]; then
 fi
 
 cd /var/www/microting/eform-service-itemsplanning-plugin
+git pull
 su ubuntu -c \
 "dotnet restore ServiceItemsPlanningPlugin.sln"
 
@@ -20,6 +21,10 @@ su ubuntu -c \
 su ubuntu -c \
 "mkdir -p /var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/"
 
+if [ -d "/var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin" ]; then
+	rm -fR /var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin
+fi
+
 su ubuntu -c \
-"cp -av /var/www/microting/eform-service-itemsplanning-plugin/ServiceItemsPlanningPlugin/out /var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin"
-./rabbitmqadmin declare queue name=eform-service-itemsplanning-plugin durable=true
+"cp -av /var/www/microting/eform-service-itemsplanning-plugin/ServiceItemsPlanningPlugin/out /var/www/microting/eform-debian-service/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin"
+/rabbitmqadmin declare queue name=eform-service-itemsplanning-plugin durable=true

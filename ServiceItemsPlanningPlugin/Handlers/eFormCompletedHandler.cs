@@ -32,58 +32,58 @@ namespace ServiceItemsPlanningPlugin.Handlers
             {
                 itemCaseSite.Status = 100;
                 var caseDto = _sdkCore.CaseReadByCaseId(message.caseId);
-                var microtingUId = caseDto.MicrotingUId;
-                var microtingCheckUId = caseDto.CheckUId;
+                var microtingUId = caseDto.Result.MicrotingUId;
+                var microtingCheckUId = caseDto.Result.CheckUId;
 //                if (microtingUId != null && microtingCheckUId != null) {}
                 if (microtingUId != null && microtingCheckUId != null)
                 {
                     var theCase = _sdkCore.CaseRead((int)microtingUId, (int)microtingCheckUId);
 
-                    itemCaseSite = SetFieldValue(itemCaseSite, theCase.Id);
+                    itemCaseSite = await SetFieldValue(itemCaseSite, theCase.Id);
 
-                    itemCaseSite.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                    itemCaseSite.MicrotingSdkCaseDoneAt = theCase.Result.DoneAt;
                     itemCaseSite.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
                     var site = _sdkCore.SiteRead(itemCaseSite.MicrotingSdkSiteId);
-                    itemCaseSite.DoneByUserName = $"{site.FirstName} {site.LastName}";
+                    itemCaseSite.DoneByUserName = $"{site.Result.FirstName} {site.Result.LastName}";
                     await itemCaseSite.Update(_dbContext);
 
                     ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.Id == itemCaseSite.ItemCaseId);
                     if (itemCase.Status != 100)
                     {
                         itemCase.Status = 100;
-                        itemCase.MicrotingSdkCaseDoneAt = theCase.DoneAt;
+                        itemCase.MicrotingSdkCaseDoneAt = theCase.Result.DoneAt;
                         itemCase.MicrotingSdkCaseId = itemCaseSite.MicrotingSdkCaseId;
                         itemCase.DoneByUserId = itemCaseSite.MicrotingSdkSiteId;
-                        itemCase.DoneByUserName = $"{site.FirstName} {site.LastName}";
+                        itemCase.DoneByUserName = $"{site.Result.FirstName} {site.Result.LastName}";
 
-                        itemCase = SetFieldValue(itemCase, theCase.Id);
+                        itemCase = await SetFieldValue(itemCase, theCase.Id);
                         await itemCase.Update(_dbContext);
                     }
                 
-                    RetractFromMicroting(itemCase.Id);
+                    await RetractFromMicroting(itemCase.Id);
                 }
             }
         }
 
-        private void RetractFromMicroting(int itemCaseId)
+        private async Task RetractFromMicroting(int itemCaseId)
         {
             List<ItemCaseSite> itemCaseSites =
                 _dbContext.ItemCaseSites.Where(x => x.ItemCaseId == itemCaseId).ToList();
             
             foreach (ItemCaseSite caseSite in itemCaseSites)
             {
-                Case_Dto caseDto = _sdkCore.CaseReadByCaseId(caseSite.MicrotingSdkCaseId);
-                if (caseDto.MicrotingUId != null) _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
+                Case_Dto caseDto = await _sdkCore.CaseReadByCaseId(caseSite.MicrotingSdkCaseId);
+                if (caseDto.MicrotingUId != null) await _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
             }
         }
 
-        private ItemCaseSite SetFieldValue(ItemCaseSite itemCaseSite, int caseId)
+        private async Task<ItemCaseSite> SetFieldValue(ItemCaseSite itemCaseSite, int caseId)
         {
             Item item = _dbContext.Items.SingleOrDefault(x => x.Id == itemCaseSite.ItemId);
             ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
             List<int> caseIds = new List<int>();
             caseIds.Add(itemCaseSite.MicrotingSdkCaseId);
-            List<FieldValue> fieldValues = _sdkCore.Advanced_FieldValueReadList(caseIds);
+            List<FieldValue> fieldValues = await _sdkCore.Advanced_FieldValueReadList(caseIds);
 
             if (itemList == null) return itemCaseSite;
 
@@ -155,13 +155,13 @@ namespace ServiceItemsPlanningPlugin.Handlers
             return itemCaseSite;
         }
 
-        private ItemCase SetFieldValue(ItemCase itemCase, int caseId)
+        private async Task<ItemCase> SetFieldValue(ItemCase itemCase, int caseId)
         {
             Item item = _dbContext.Items.SingleOrDefault(x => x.Id == itemCase.ItemId);
             ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
             List<int> caseIds = new List<int>();
             caseIds.Add(itemCase.MicrotingSdkCaseId);
-            List<FieldValue> fieldValues = _sdkCore.Advanced_FieldValueReadList(caseIds);
+            List<FieldValue> fieldValues = await _sdkCore.Advanced_FieldValueReadList(caseIds);
 
             if (itemList == null) return itemCase;
 

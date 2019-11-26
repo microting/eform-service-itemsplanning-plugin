@@ -57,31 +57,31 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     foreach (ItemCaseSite caseToDelete in casesToDelete)
                     {
-                        Case_Dto caseDto = _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
-                        if (caseDto.MicrotingUId != null) _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
+                        Case_Dto caseDto = await _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
+                        if (caseDto.MicrotingUId != null) await _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
                         caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
                         await caseToDelete.Update(_dbContext);
                     }
 
-                    mainElement.Label = string.IsNullOrEmpty(item.ItemNumber) ? "" : item.ItemNumber;
+                    mainElement.Result.Label = string.IsNullOrEmpty(item.ItemNumber) ? "" : item.ItemNumber;
                     if (!string.IsNullOrEmpty(item.Name))
                     {
-                        mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.Name}" : $" - {item.Name}";
+                        mainElement.Result.Label += string.IsNullOrEmpty(mainElement.Result.Label) ? $"{item.Name}" : $" - {item.Name}";
                     }
 
                     if (!string.IsNullOrEmpty(item.BuildYear))
                     {
-                        mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.BuildYear}" : $" - {item.BuildYear}";
+                        mainElement.Result.Label += string.IsNullOrEmpty(mainElement.Result.Label) ? $"{item.BuildYear}" : $" - {item.BuildYear}";
                     }
 
                     if (!string.IsNullOrEmpty(item.Type))
                     {
-                        mainElement.Label += string.IsNullOrEmpty(mainElement.Label) ? $"{item.Type}" : $" - {item.Type}";
+                        mainElement.Result.Label += string.IsNullOrEmpty(mainElement.Result.Label) ? $"{item.Type}" : $" - {item.Type}";
                     }
-                    mainElement.ElementList[0].Label = mainElement.Label;
-                    mainElement.CheckListFolderName = folderId;
-                    mainElement.StartDate = DateTime.Now.ToUniversalTime();
-                    mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
+                    mainElement.Result.ElementList[0].Label = mainElement.Result.Label;
+                    mainElement.Result.CheckListFolderName = folderId;
+                    mainElement.Result.StartDate = DateTime.Now.ToUniversalTime();
+                    mainElement.Result.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
 
                     ItemCaseSite itemCaseSite =
                         await _dbContext.ItemCaseSites.SingleOrDefaultAsync(x => x.ItemCaseId == itemCase.Id && x.MicrotingSdkSiteId == siteId);
@@ -101,10 +101,10 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     }
 
                     if (itemCaseSite.MicrotingSdkCaseId >= 1) continue;
-                    int? caseId = _sdkCore.CaseCreate(mainElement, "", siteId);
+                    int? caseId = await _sdkCore.CaseCreate(await mainElement, "", siteId);
                     if (caseId != null)
                     {
-                        Case_Dto caseDto = _sdkCore.CaseLookupMUId((int) caseId);
+                        Case_Dto caseDto = await _sdkCore.CaseLookupMUId((int) caseId);
                         if (caseDto?.CaseId != null) itemCaseSite.MicrotingSdkCaseId = (int) caseDto.CaseId;
                         await itemCaseSite.Update(_dbContext);
                     }
@@ -114,7 +114,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
         
         private int GetFolderId(string name)
         {
-            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true);
+            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true).Result;
 
             bool folderAlreadyExist = false;
             int microtingUId = 0;
@@ -130,7 +130,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
             if (!folderAlreadyExist)
             {
                 _sdkCore.FolderCreate(name, "", null);
-                folderDtos = _sdkCore.FolderGetAll(true);
+                folderDtos = _sdkCore.FolderGetAll(true).Result;
                 
                 foreach (Folder_Dto folderDto in folderDtos)
                 {
