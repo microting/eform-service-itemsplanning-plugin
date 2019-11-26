@@ -26,5 +26,5 @@ if [ -d "/var/www/microting/eform-debian-service/MicrotingService/MicrotingServi
 fi
 
 su ubuntu -c \
-"cp -av /var/www/microting/eform-service-itemsplanning-plugin/ServiceItemsPlanningPlugin/out /var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin"
+"cp -av /var/www/microting/eform-service-itemsplanning-plugin/ServiceItemsPlanningPlugin/out /var/www/microting/eform-debian-service/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin"
 /rabbitmqadmin declare queue name=eform-service-itemsplanning-plugin durable=true
