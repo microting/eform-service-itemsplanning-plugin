@@ -72,7 +72,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
             
             foreach (ItemCaseSite caseSite in itemCaseSites)
             {
-                Case_Dto caseDto = await _sdkCore.CaseReadByCaseId(caseSite.MicrotingSdkCaseId);
+                CaseDto caseDto = await _sdkCore.CaseReadByCaseId(caseSite.MicrotingSdkCaseId);
                 if (caseDto.MicrotingUId != null) await _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
             }
         }

@@ -57,7 +57,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     foreach (ItemCaseSite caseToDelete in casesToDelete)
                     {
-                        Case_Dto caseDto = await _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
+                        CaseDto caseDto = await _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
                         if (caseDto.MicrotingUId != null) await _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
                         caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
                         await caseToDelete.Update(_dbContext);
@@ -104,7 +104,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     int? caseId = await _sdkCore.CaseCreate(await mainElement, "", siteId);
                     if (caseId != null)
                     {
-                        Case_Dto caseDto = await _sdkCore.CaseLookupMUId((int) caseId);
+                        CaseDto caseDto = await _sdkCore.CaseLookupMUId((int) caseId);
                         if (caseDto?.CaseId != null) itemCaseSite.MicrotingSdkCaseId = (int) caseDto.CaseId;
                         await itemCaseSite.Update(_dbContext);
                     }
