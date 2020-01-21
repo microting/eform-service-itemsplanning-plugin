@@ -114,11 +114,11 @@ namespace ServiceItemsPlanningPlugin.Handlers
         
         private int GetFolderId(string name)
         {
-            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true).Result;
+            List<FolderDto> folderDtos = _sdkCore.FolderGetAll(true).Result;
 
             bool folderAlreadyExist = false;
             int microtingUId = 0;
-            foreach (Folder_Dto folderDto in folderDtos)
+            foreach (FolderDto folderDto in folderDtos)
             {
                 if (folderDto.Name == name)
                 {
@@ -132,7 +132,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 _sdkCore.FolderCreate(name, "", null);
                 folderDtos = _sdkCore.FolderGetAll(true).Result;
                 
-                foreach (Folder_Dto folderDto in folderDtos)
+                foreach (FolderDto folderDto in folderDtos)
                 {
                     if (folderDto.Name == name)
                     {
