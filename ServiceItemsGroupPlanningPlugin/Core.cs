@@ -18,26 +18,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Dto;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.WindowsService.BasePn;
-using Rebus.Bus;
-using ServiceItemsPlanningPlugin.Installers;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-using ServiceItemsPlanningPlugin.Messages;
-using ServiceItemsPlanningPlugin.Scheduler.Jobs;
-
-namespace ServiceItemsPlanningPlugin
+namespace ServiceItemsGroupPlanningPlugin
 {
+    using System;
+    using System.ComponentModel.Composition;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using Castle.MicroKernel.Registration;
+    using Castle.Windsor;
+    using Infrastructure.Helpers;
+    using Installers;
+    using Messages;
+    using Microsoft.EntityFrameworkCore;
+    using Microting.eForm.Dto;
+    using Microting.ItemsPlanningBase.Infrastructure.Data;
+    using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+    using Microting.WindowsService.BasePn;
+    using Rebus.Bus;
+    using Scheduler.Jobs;
+
     [Export(typeof(ISdkEventHandler))]
     public class Core : ISdkEventHandler
     {

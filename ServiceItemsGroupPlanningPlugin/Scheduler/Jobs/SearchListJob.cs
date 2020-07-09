@@ -18,22 +18,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using ServiceItemsPlanningPlugin.Extensions;
-using ServiceItemsPlanningPlugin.Messages;
-using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Infrastructure.Constants;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.ItemsPlanningBase.Infrastructure.Enums;
-using Rebus.Bus;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-
-namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
+namespace ServiceItemsGroupPlanningPlugin.Scheduler.Jobs
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Infrastructure.Helpers;
+    using Messages;
+    using Microsoft.EntityFrameworkCore;
+    using Microting.eForm.Infrastructure.Constants;
+    using Microting.ItemsPlanningBase.Infrastructure.Data;
     using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
+    using Microting.ItemsPlanningBase.Infrastructure.Enums;
+    using Rebus.Bus;
 
     public class SearchListJob : IJob
     {

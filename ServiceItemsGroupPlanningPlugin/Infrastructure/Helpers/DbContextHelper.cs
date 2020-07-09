@@ -1,8 +1,8 @@
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
-
-namespace ServiceItemsPlanningPlugin.Infrastructure.Helpers
+namespace ServiceItemsGroupPlanningPlugin.Infrastructure.Helpers
 {
+    using Microting.ItemsPlanningBase.Infrastructure.Data;
+    using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+
     public class DbContextHelper
     {
         private string ConnectionString { get;}
