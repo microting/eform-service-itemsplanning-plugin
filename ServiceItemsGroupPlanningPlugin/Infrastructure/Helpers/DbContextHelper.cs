@@ -1,7 +1,7 @@
 namespace ServiceItemsGroupPlanningPlugin.Infrastructure.Helpers
 {
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Factories;
 
     public class DbContextHelper
     {
@@ -12,9 +12,9 @@ namespace ServiceItemsGroupPlanningPlugin.Infrastructure.Helpers
             ConnectionString = connectionString;
         }
 
-        public ItemsPlanningPnDbContext GetDbContext()
+        public ItemsGroupPlanningPnDbContext GetDbContext()
         {
-            ItemsPlanningPnContextFactory contextFactory = new ItemsPlanningPnContextFactory();
+            ItemsGroupPlanningPnContextFactory contextFactory = new ItemsGroupPlanningPnContextFactory();
 
             return contextFactory.CreateDbContext(new[] { ConnectionString });
         }

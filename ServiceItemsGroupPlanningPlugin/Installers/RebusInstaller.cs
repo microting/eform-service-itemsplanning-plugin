@@ -47,7 +47,7 @@ namespace ServiceItemsGroupPlanningPlugin.Installers
         {
             Configure.With(new CastleWindsorContainerAdapter(container))
                 .Logging(l => l.ColoredConsole())
-                .Transport(t => t.UseRabbitMq("amqp://admin:password@localhost", "eform-service-itemsplanning-plugin"))
+                .Transport(t => t.UseRabbitMq("amqp://admin:password@localhost", "eform-service-items-group-planning-plugin"))
                 .Options(o =>
                 {
                     o.SetMaxParallelism(_maxParallelism);

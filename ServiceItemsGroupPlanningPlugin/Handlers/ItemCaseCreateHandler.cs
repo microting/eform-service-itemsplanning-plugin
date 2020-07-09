@@ -9,13 +9,13 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Dto;
     using Microting.eForm.Infrastructure.Constants;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
     using Rebus.Handlers;
 
     public class ItemCaseCreateHandler : IHandleMessages<ItemCaseCreate>
     {
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
         
         public ItemCaseCreateHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)

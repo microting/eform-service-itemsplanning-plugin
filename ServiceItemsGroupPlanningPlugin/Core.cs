@@ -32,8 +32,8 @@ namespace ServiceItemsGroupPlanningPlugin
     using Messages;
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Dto;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Factories;
     using Microting.WindowsService.BasePn;
     using Rebus.Bus;
     using Scheduler.Jobs;
@@ -50,7 +50,7 @@ namespace ServiceItemsGroupPlanningPlugin
         private string _serviceLocation;
         private static int _maxParallelism = 1;
         private static int _numberOfWorkers = 1;
-        private ItemsPlanningPnDbContext _dbContext;
+        private ItemsGroupPlanningPnDbContext _dbContext;
         private Timer _scheduleTimer;
         private DbContextHelper _dbContextHelper;
 
@@ -105,7 +105,7 @@ namespace ServiceItemsGroupPlanningPlugin
 
         public bool Start(string sdkConnectionString, string serviceLocation)
         {
-            Console.WriteLine("ServiceItemsPlanningPlugin start called");
+            Console.WriteLine("ServiceGroupItemsPlanningPlugin start called");
             try
             {
                 string dbNameSection;
@@ -121,7 +121,7 @@ namespace ServiceItemsGroupPlanningPlugin
                 }
                 
                 
-                var pluginDbName = $"Initial Catalog={dbPrefix}_eform-angular-itemsplanning-plugin;";
+                var pluginDbName = $"Initial Catalog={dbPrefix}_eform-angular-items-group-planning-plugin;";
                 var connectionString = sdkConnectionString.Replace(dbNameSection, pluginDbName);
 
 
@@ -136,7 +136,7 @@ namespace ServiceItemsGroupPlanningPlugin
                     if (string.IsNullOrEmpty(connectionString))
                         throw new ArgumentException("serverConnectionString is not allowed to be null or empty");
 
-                    ItemsPlanningPnContextFactory contextFactory = new ItemsPlanningPnContextFactory();
+                    ItemsGroupPlanningPnContextFactory contextFactory = new ItemsGroupPlanningPnContextFactory();
 
                     _dbContext = contextFactory.CreateDbContext(new[] { connectionString });
                     _dbContext.Database.Migrate();

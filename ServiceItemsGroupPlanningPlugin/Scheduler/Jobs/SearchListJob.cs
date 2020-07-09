@@ -28,14 +28,14 @@ namespace ServiceItemsGroupPlanningPlugin.Scheduler.Jobs
     using Messages;
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Infrastructure.Constants;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
-    using Microting.ItemsPlanningBase.Infrastructure.Enums;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Enums;
     using Rebus.Bus;
 
     public class SearchListJob : IJob
     {
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly IBus _bus;
 
         public SearchListJob(DbContextHelper dbContextHelper, IBus bus)

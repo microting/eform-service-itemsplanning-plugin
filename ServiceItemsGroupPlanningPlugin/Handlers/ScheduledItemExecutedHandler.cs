@@ -28,14 +28,14 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
     using Messages;
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Dto;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
     using OpenStack.NetCoreSwiftClient.Extensions;
     using Rebus.Bus;
     using Rebus.Handlers;
 
     public class ScheduledItemExecutedHandler : IHandleMessages<ScheduledItemExecuted>
     {
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
         private readonly IBus _bus;
 

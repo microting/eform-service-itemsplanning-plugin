@@ -4,14 +4,14 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
     using System.Threading.Tasks;
     using Infrastructure.Helpers;
     using Messages;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
     using Rebus.Handlers;
 
     public class EFormRetrievedHandler : IHandleMessages<eFormRetrieved>
     {
         private readonly eFormCore.Core _sdkCore;
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
 
         public EFormRetrievedHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)
         {

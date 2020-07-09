@@ -9,14 +9,14 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
     using Microting.eForm.Dto;
     using Microting.eForm.Infrastructure.Constants;
     using Microting.eForm.Infrastructure.Models;
-    using Microting.ItemsPlanningBase.Infrastructure.Data;
-    using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
     using Rebus.Handlers;
 
     public class EFormCompletedHandler : IHandleMessages<eFormCompleted>
     {
         private readonly eFormCore.Core _sdkCore;
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
 
         public EFormCompletedHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)
         {
