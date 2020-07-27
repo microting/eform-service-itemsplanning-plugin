@@ -1,21 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Dto;
-using Microting.eForm.Infrastructure.Constants;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
-using Rebus.Handlers;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-using ServiceItemsPlanningPlugin.Messages;
-
-namespace ServiceItemsPlanningPlugin.Handlers
+namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Infrastructure.Helpers;
+    using Messages;
+    using Microsoft.EntityFrameworkCore;
+    using Microting.eForm.Dto;
+    using Microting.eForm.Infrastructure.Constants;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
+    using Rebus.Handlers;
+
     public class ItemCaseCreateHandler : IHandleMessages<ItemCaseCreate>
     {
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
         
         public ItemCaseCreateHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)
@@ -57,7 +57,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
 
                     foreach (ItemCaseSite caseToDelete in casesToDelete)
                     {
-                        Case_Dto caseDto = await _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
+                        CaseDto caseDto = await _sdkCore.CaseLookupCaseId(caseToDelete.MicrotingSdkCaseId);
                         if (caseDto.MicrotingUId != null) await _sdkCore.CaseDelete((int) caseDto.MicrotingUId);
                         caseToDelete.WorkflowState = Constants.WorkflowStates.Retracted;
                         await caseToDelete.Update(_dbContext);
@@ -104,7 +104,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                     int? caseId = await _sdkCore.CaseCreate(await mainElement, "", siteId);
                     if (caseId != null)
                     {
-                        Case_Dto caseDto = await _sdkCore.CaseLookupMUId((int) caseId);
+                        CaseDto caseDto = await _sdkCore.CaseLookupMUId((int) caseId);
                         if (caseDto?.CaseId != null) itemCaseSite.MicrotingSdkCaseId = (int) caseDto.CaseId;
                         await itemCaseSite.Update(_dbContext);
                     }
@@ -114,11 +114,11 @@ namespace ServiceItemsPlanningPlugin.Handlers
         
         private int GetFolderId(string name)
         {
-            List<Folder_Dto> folderDtos = _sdkCore.FolderGetAll(true).Result;
+            List<FolderDto> folderDtos = _sdkCore.FolderGetAll(true).Result;
 
             bool folderAlreadyExist = false;
             int microtingUId = 0;
-            foreach (Folder_Dto folderDto in folderDtos)
+            foreach (FolderDto folderDto in folderDtos)
             {
                 if (folderDto.Name == name)
                 {
@@ -132,7 +132,7 @@ namespace ServiceItemsPlanningPlugin.Handlers
                 _sdkCore.FolderCreate(name, "", null);
                 folderDtos = _sdkCore.FolderGetAll(true).Result;
                 
-                foreach (Folder_Dto folderDto in folderDtos)
+                foreach (FolderDto folderDto in folderDtos)
                 {
                     if (folderDto.Name == name)
                     {

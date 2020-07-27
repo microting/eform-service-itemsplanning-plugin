@@ -1,4 +1,4 @@
-namespace ServiceItemsPlanningPlugin.Messages
+namespace ServiceItemsGroupPlanningPlugin.Messages
 {
     public class eFormCompleted
     {

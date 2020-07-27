@@ -1,4 +1,4 @@
-﻿/*
+/*
 The MIT License (MIT)
 Copyright (c) 2007 - 2019 Microting A/S
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,15 +18,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace ServiceItemsPlanningPlugin.Messages
+namespace ServiceItemsGroupPlanningPlugin.Integration.Test
 {
-    public class ScheduledItemExecuted
-    {
-        public int itemListId { get; }
+    using NUnit.Framework;
 
-        public ScheduledItemExecuted(int itemListId)
+    [TestFixture]
+    public class CanaryInAColeMine
+    {
+        [Test]
+        public void CanPeep()
         {
-            this.itemListId = itemListId;
+            Assert.True(true);
         }
     }
 }

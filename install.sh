@@ -19,10 +19,10 @@ su ubuntu -c \
 "dotnet publish ServiceItemsPlanningPlugin.sln -o out /p:Version=$GITVERSION --runtime linux-x64 --configuration Release"
 
 su ubuntu -c \
-"mkdir -p /var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/"
+"mkdir -p /var/www/microting/eform-debian-service/MicrotingService/out/Plugins/"
 
-if [ -d "/var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin" ]; then
-	rm -fR /var/www/microting/eform-debian-service/MicrotingService/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin
+if [ -d "/var/www/microting/eform-debian-service/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin" ]; then
+	rm -fR /var/www/microting/eform-debian-service/MicrotingService/out/Plugins/ServiceItemsPlanningPlugin
 fi
 
 su ubuntu -c \

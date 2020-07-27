@@ -18,7 +18,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace ServiceItemsPlanningPlugin.Scheduler
+namespace ServiceItemsGroupPlanningPlugin.Scheduler
 {
     using System;
     using System.Collections.Generic;

@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ServiceItemsPlanningPlugin\ServiceItemsPlanningPlugin.csproj" />
+      <ProjectReference Include="..\ServiceItemsGroupPlanningPlugin\ServiceItemsGroupPlanningPlugin.csproj" />
     </ItemGroup>
 
     <ItemGroup>

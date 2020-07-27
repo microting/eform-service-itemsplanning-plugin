@@ -1,17 +1,17 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
-using Rebus.Handlers;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-using ServiceItemsPlanningPlugin.Messages;
-
-namespace ServiceItemsPlanningPlugin.Handlers
+namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Infrastructure.Helpers;
+    using Messages;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
+    using Rebus.Handlers;
+
     public class EFormRetrievedHandler : IHandleMessages<eFormRetrieved>
     {
         private readonly eFormCore.Core _sdkCore;
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
 
         public EFormRetrievedHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)
         {
