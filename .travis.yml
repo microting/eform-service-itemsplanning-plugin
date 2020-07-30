@@ -1,6 +1,6 @@
 dist: xenial
 language: csharp
-solution: ServiceItemsPlanningPlugin.sln
+solution: ServiceItemsGroupPlanningPlugin.sln
 mono: none
 dotnet: 3.1.101
 branches:
@@ -25,5 +25,5 @@ script:
   - chmod +x rabbitmqadmin
   - ./rabbitmqadmin declare queue name=eformsdk-input durable=true
   - ./rabbitmqadmin declare queue name=eform-service-trashinspection-plugin durable=true
-  - dotnet build ServiceItemsPlanningPlugin.sln
-  - dotnet test -v n ServiceItemsPlanningPlugin.Integration.Test/ServiceItemsPlanningPlugin.Integration.Test.csproj
+  - dotnet build ServiceItemsGroupPlanningPlugin.sln
+  - dotnet test -v n ServiceItemsGroupPlanningPlugin.Integration.Test/ServiceItemsGroupPlanningPlugin.Integration.Test.csproj
