@@ -101,7 +101,7 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
                     }
 
                     if (itemCaseSite.MicrotingSdkCaseId >= 1) continue;
-                    int? caseId = await _sdkCore.CaseCreate(await mainElement, "", siteId);
+                    int? caseId = await _sdkCore.CaseCreate(await mainElement, "", siteId, null);
                     if (caseId != null)
                     {
                         CaseDto caseDto = await _sdkCore.CaseLookupMUId((int) caseId);
