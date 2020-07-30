@@ -18,12 +18,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace ServiceItemsPlanningPlugin.Scheduler.Jobs
+namespace ServiceItemsGroupPlanningPlugin.Messages
 {
-    using System.Threading.Tasks;
-
-    public interface IJob
+    public class ScheduledItemExecuted
     {
-        Task Execute();
+        public int itemListId { get; }
+
+        public ScheduledItemExecuted(int itemListId)
+        {
+            this.itemListId = itemListId;
+        }
     }
 }

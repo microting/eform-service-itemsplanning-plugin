@@ -18,26 +18,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Dto;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.WindowsService.BasePn;
-using Rebus.Bus;
-using ServiceItemsPlanningPlugin.Installers;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Factories;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-using ServiceItemsPlanningPlugin.Messages;
-using ServiceItemsPlanningPlugin.Scheduler.Jobs;
-
-namespace ServiceItemsPlanningPlugin
+namespace ServiceItemsGroupPlanningPlugin
 {
+    using System;
+    using System.ComponentModel.Composition;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using Castle.MicroKernel.Registration;
+    using Castle.Windsor;
+    using Infrastructure.Helpers;
+    using Installers;
+    using Messages;
+    using Microsoft.EntityFrameworkCore;
+    using Microting.eForm.Dto;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Factories;
+    using Microting.WindowsService.BasePn;
+    using Rebus.Bus;
+    using Scheduler.Jobs;
+
     [Export(typeof(ISdkEventHandler))]
     public class Core : ISdkEventHandler
     {
@@ -50,7 +50,7 @@ namespace ServiceItemsPlanningPlugin
         private string _serviceLocation;
         private static int _maxParallelism = 1;
         private static int _numberOfWorkers = 1;
-        private ItemsPlanningPnDbContext _dbContext;
+        private ItemsGroupPlanningPnDbContext _dbContext;
         private Timer _scheduleTimer;
         private DbContextHelper _dbContextHelper;
 
@@ -105,7 +105,7 @@ namespace ServiceItemsPlanningPlugin
 
         public bool Start(string sdkConnectionString, string serviceLocation)
         {
-            Console.WriteLine("ServiceItemsPlanningPlugin start called");
+            Console.WriteLine("ServiceGroupItemsPlanningPlugin start called");
             try
             {
                 string dbNameSection;
@@ -121,7 +121,7 @@ namespace ServiceItemsPlanningPlugin
                 }
                 
                 
-                var pluginDbName = $"Initial Catalog={dbPrefix}_eform-angular-itemsplanning-plugin;";
+                var pluginDbName = $"Initial Catalog={dbPrefix}_eform-angular-items-group-planning-plugin;";
                 var connectionString = sdkConnectionString.Replace(dbNameSection, pluginDbName);
 
 
@@ -136,7 +136,7 @@ namespace ServiceItemsPlanningPlugin
                     if (string.IsNullOrEmpty(connectionString))
                         throw new ArgumentException("serverConnectionString is not allowed to be null or empty");
 
-                    ItemsPlanningPnContextFactory contextFactory = new ItemsPlanningPnContextFactory();
+                    ItemsGroupPlanningPnContextFactory contextFactory = new ItemsGroupPlanningPnContextFactory();
 
                     _dbContext = contextFactory.CreateDbContext(new[] { connectionString });
                     _dbContext.Database.Migrate();

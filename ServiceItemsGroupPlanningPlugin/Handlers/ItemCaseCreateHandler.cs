@@ -1,21 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Dto;
-using Microting.eForm.Infrastructure.Constants;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
-using Rebus.Handlers;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-using ServiceItemsPlanningPlugin.Messages;
-
-namespace ServiceItemsPlanningPlugin.Handlers
+namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Infrastructure.Helpers;
+    using Messages;
+    using Microsoft.EntityFrameworkCore;
+    using Microting.eForm.Dto;
+    using Microting.eForm.Infrastructure.Constants;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data.Entities;
+    using Rebus.Handlers;
+
     public class ItemCaseCreateHandler : IHandleMessages<ItemCaseCreate>
     {
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
         
         public ItemCaseCreateHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)

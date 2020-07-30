@@ -1,4 +1,4 @@
-/*
+﻿/*
 The MIT License (MIT)
 Copyright (c) 2007 - 2019 Microting A/S
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,17 +18,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using NUnit.Framework;
-
-namespace ServiceItemsPlanningPlugin.Integration.Test
+namespace ServiceItemsGroupPlanningPlugin.Scheduler.Jobs
 {
-    [TestFixture]
-    public class CanaryInAColeMine
+    using System.Threading.Tasks;
+
+    public interface IJob
     {
-        [Test]
-        public void CanPeep()
-        {
-            Assert.True(true);
-        }
+        Task Execute();
     }
 }

@@ -18,26 +18,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ServiceItemsPlanningPlugin.Messages;
-using Microsoft.EntityFrameworkCore;
-using Microting.eForm.Dto;
-using Microting.eForm.Infrastructure.Constants;
-using Microting.ItemsPlanningBase.Infrastructure.Data;
-using Microting.ItemsPlanningBase.Infrastructure.Data.Entities;
-using OpenStack.NetCoreSwiftClient.Extensions;
-using Rebus.Bus;
-using Rebus.Handlers;
-using ServiceItemsPlanningPlugin.Infrastructure.Helpers;
-
-namespace ServiceItemsPlanningPlugin.Handlers
+namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Infrastructure.Helpers;
+    using Messages;
+    using Microsoft.EntityFrameworkCore;
+    using Microting.eForm.Dto;
+    using Microting.ItemsGroupPlanningBase.Infrastructure.Data;
+    using OpenStack.NetCoreSwiftClient.Extensions;
+    using Rebus.Bus;
+    using Rebus.Handlers;
+
     public class ScheduledItemExecutedHandler : IHandleMessages<ScheduledItemExecuted>
     {
-        private readonly ItemsPlanningPnDbContext _dbContext;
+        private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
         private readonly IBus _bus;
 
