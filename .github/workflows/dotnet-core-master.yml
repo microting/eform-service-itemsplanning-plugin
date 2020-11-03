@@ -40,7 +40,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Unit Tests
-      run: dotnet test --no-restore -c Release -v n ServiceItemsPlanningPlugin.Integration.Test/ServiceItemsPlanningPlugin.Integration.Test.csproj
+      run: dotnet test --no-restore -c Release -v n ServiceItemsGroupPlanningPlugin.Integration.Test/ServiceItemsGroupPlanningPlugin.Integration.Test.csproj
     - name: The job has failed
       if: ${{ failure() }}
       run: |
