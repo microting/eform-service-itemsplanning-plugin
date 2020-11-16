@@ -4,7 +4,7 @@ GIT_STATUS=`git status | grep "nothing to commit, working tree clean" | wc -l`
 if (( "$GIT_STATUS" > 0 )); then
 	git checkout stable
 	git pull
-	cd ServiceItemsPlanningPlugin
+	cd ServiceItemsGroupPlanningPlugin
 
 	dotnet add ServiceItemsGroupPlanningPlugin.csproj package Microting.eForm
 	dotnet add ServiceItemsGroupPlanningPlugin.csproj package Microting.ItemsGroupPlanningBase
