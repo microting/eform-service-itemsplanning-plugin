@@ -1,3 +1,5 @@
+using Microting.eForm.Infrastructure.Data.Entities;
+
 namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
     using System.Collections.Generic;
@@ -23,11 +25,11 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
             _dbContext = dbContextHelper.GetDbContext();
             _sdkCore = sdkCore;
         }
-        
+
         public async Task Handle(eFormCompleted message)
         {
             ItemCaseSite itemCaseSite = await _dbContext.ItemCaseSites.SingleOrDefaultAsync(x => x.MicrotingSdkCaseId == message.caseId);
-            
+
             if (itemCaseSite != null)
             {
                 itemCaseSite.Status = 100;
@@ -37,7 +39,9 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
 //                if (microtingUId != null && microtingCheckUId != null) {}
                 if (microtingUId != null && microtingCheckUId != null)
                 {
-                    var theCase = _sdkCore.CaseRead((int)microtingUId, (int)microtingCheckUId);
+                    Language language = await _sdkCore.DbContextHelper.GetDbContext().Languages
+                        .SingleAsync(x => x.LanguageCode == "da");
+                    var theCase = _sdkCore.CaseRead((int)microtingUId, (int)microtingCheckUId, language);
 
                     itemCaseSite = await SetFieldValue(itemCaseSite, theCase.Id);
 
@@ -59,7 +63,7 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
                         itemCase = await SetFieldValue(itemCase, theCase.Id);
                         await itemCase.Update(_dbContext);
                     }
-                
+
                     await RetractFromMicroting(itemCase.Id);
                 }
             }
@@ -69,7 +73,7 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
         {
             List<ItemCaseSite> itemCaseSites =
                 _dbContext.ItemCaseSites.Where(x => x.ItemCaseId == itemCaseId).ToList();
-            
+
             foreach (ItemCaseSite caseSite in itemCaseSites)
             {
                 CaseDto caseDto = await _sdkCore.CaseReadByCaseId(caseSite.MicrotingSdkCaseId);
@@ -83,7 +87,10 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
             ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
             List<int> caseIds = new List<int>();
             caseIds.Add(itemCaseSite.MicrotingSdkCaseId);
-            List<FieldValue> fieldValues = await _sdkCore.Advanced_FieldValueReadList(caseIds);
+
+            Language language = await _sdkCore.DbContextHelper.GetDbContext().Languages
+                .SingleAsync(x => x.LanguageCode == "da");
+            List<FieldValue> fieldValues = await _sdkCore.Advanced_FieldValueReadList(caseIds, language);
 
             if (itemList == null) return itemCaseSite;
 
@@ -161,7 +168,9 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
             ItemList itemList = _dbContext.ItemLists.SingleOrDefault(x => x.Id == item.ItemListId);
             List<int> caseIds = new List<int>();
             caseIds.Add(itemCase.MicrotingSdkCaseId);
-            List<FieldValue> fieldValues = await _sdkCore.Advanced_FieldValueReadList(caseIds);
+            Language language = await _sdkCore.DbContextHelper.GetDbContext().Languages
+                .SingleAsync(x => x.LanguageCode == "da");
+            List<FieldValue> fieldValues = await _sdkCore.Advanced_FieldValueReadList(caseIds, language);
 
             if (itemList == null) return itemCase;
 

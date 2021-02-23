@@ -18,6 +18,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Microting.eForm.Infrastructure.Data.Entities;
+
 namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
     using System;
@@ -51,7 +53,10 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
         {
             var siteIds = _dbContext.PluginConfigurationValues.FirstOrDefault(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
             var list = await _dbContext.ItemLists.SingleOrDefaultAsync(x => x.Id == message.itemListId);
-            var mainElement = _sdkCore.TemplateRead(list.RelatedEFormId);
+
+            Language language = await _sdkCore.DbContextHelper.GetDbContext().Languages
+                .SingleAsync(x => x.LanguageCode == "da");
+            var mainElement = _sdkCore.ReadeForm(list.RelatedEFormId, language);
             string folderId = getFolderId(list.Name).ToString();
 
             if (siteIds == null || siteIds.Value.IsNullOrEmpty())
@@ -87,7 +92,7 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
             {
                 _sdkCore.FolderCreate(name, "", null);
                 folderDtos = _sdkCore.FolderGetAll(true).Result;
-                
+
                 foreach (FolderDto folderDto in folderDtos)
                 {
                     if (folderDto.Name == name)

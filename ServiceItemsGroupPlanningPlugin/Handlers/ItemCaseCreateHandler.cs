@@ -1,3 +1,5 @@
+using Microting.eForm.Infrastructure.Data.Entities;
+
 namespace ServiceItemsGroupPlanningPlugin.Handlers
 {
     using System;
@@ -17,13 +19,13 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
     {
         private readonly ItemsGroupPlanningPnDbContext _dbContext;
         private readonly eFormCore.Core _sdkCore;
-        
+
         public ItemCaseCreateHandler(eFormCore.Core sdkCore, DbContextHelper dbContextHelper)
         {
             _sdkCore = sdkCore;
             _dbContext = dbContextHelper.GetDbContext();
         }
-        
+
         public async Task Handle(ItemCaseCreate message)
         {
             Item item = await _dbContext.Items.SingleOrDefaultAsync(x => x.Id == message.ItemId);
@@ -31,16 +33,19 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
             if (item != null)
             {
                 var siteIds = await _dbContext.PluginConfigurationValues.FirstOrDefaultAsync(x => x.Name == "ItemsPlanningBaseSettings:SiteIds");
-                var mainElement = _sdkCore.TemplateRead(message.RelatedEFormId);
+
+                Language language = await _sdkCore.DbContextHelper.GetDbContext().Languages
+                    .SingleAsync(x => x.LanguageCode == "da");
+                var mainElement = _sdkCore.ReadeForm(message.RelatedEFormId, language);
                 string folderId = GetFolderId(message.Name).ToString();
 
                 ItemCase itemCase = await _dbContext.ItemCases.SingleOrDefaultAsync(x => x.ItemId == item.Id && x.WorkflowState != Constants.WorkflowStates.Retracted);
                 if (itemCase != null)
                 {
                     itemCase.WorkflowState = Constants.WorkflowStates.Retracted;
-                    await itemCase.Update(_dbContext);    
+                    await itemCase.Update(_dbContext);
                 }
-                
+
                 itemCase = new ItemCase()
                 {
                     ItemId = item.Id,
@@ -111,7 +116,7 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
                 }
             }
         }
-        
+
         private int GetFolderId(string name)
         {
             List<FolderDto> folderDtos = _sdkCore.FolderGetAll(true).Result;
@@ -131,7 +136,7 @@ namespace ServiceItemsGroupPlanningPlugin.Handlers
             {
                 _sdkCore.FolderCreate(name, "", null);
                 folderDtos = _sdkCore.FolderGetAll(true).Result;
-                
+
                 foreach (FolderDto folderDto in folderDtos)
                 {
                     if (folderDto.Name == name)
